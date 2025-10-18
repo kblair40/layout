@@ -3,7 +3,7 @@
 import React from "react";
 
 const Providers = ({ children }: React.PropsWithChildren) => {
-  return <div className="border">{children}</div>;
+  return <div>{children}</div>;
 };
 
 export default Providers;
