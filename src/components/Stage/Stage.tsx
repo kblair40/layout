@@ -74,6 +74,8 @@ const Stage = () => {
     const lastLine = getLastLine();
     console.log("MOUSEUP POINT:", point);
 
+    const points = lastLine.points as number[];
+
     // add point
     lastLine.points = (lastLine.points as number[])
       .slice(0, 2)
@@ -84,9 +86,22 @@ const Stage = () => {
     console.log("SETTING LINES TO:", [...lines], "\n\n");
   };
 
-  if (typeof window === "undefined") {
-    return null;
-  }
+  const handleDragStart = (e: KonvaMouseEvent) => {
+    const id = e.target.id();
+    console.log("Drag Start:", id);
+    setLines(
+      lines.map((line) => {
+        return {
+          ...line,
+          isDragging: line.id === id,
+        };
+      })
+    );
+  };
+
+  //   if (typeof window === "undefined") {
+  //     return null;
+  //   }
 
   return (
     <Canvas
@@ -99,7 +114,14 @@ const Stage = () => {
     >
       <Layer>
         {lines.map((line, i) => {
-          return <Line {...DEFAULT_LINE} {...line} key={i} />;
+          return (
+            <Line
+              {...DEFAULT_LINE}
+              {...line}
+              onDragStart={handleDragStart}
+              key={i}
+            />
+          );
         })}
       </Layer>
     </Canvas>
