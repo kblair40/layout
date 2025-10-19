@@ -2,62 +2,55 @@
 
 import "client-only";
 import React, { useState, useRef } from "react";
-import {
-  Stage as Canvas,
-  Layer,
-  Rect,
-  Text,
-  Circle,
-  Line,
-} from "react-konva";
+import { Stage as Canvas, Layer, Rect, Text, Circle, Line } from "react-konva";
 import Konva from "konva";
 import type { LineConfig } from "konva/lib/shapes/Line";
+import type { Vector2d } from "konva/lib/types";
 
 type KonvaMouseEvent = Konva.KonvaEventObject<MouseEvent>;
-type Props = {};
 
 const DEFAULT_LINE: Partial<LineConfig> = {
   strokeWidth: 1,
   stroke: "black",
+  draggable: true,
 };
 
-const Stage = (props: Props) => {
+const Stage = () => {
   const [lines, setLines] = useState<LineConfig[]>([]);
 
   const isDrawing = useRef(false);
 
+  function getMousePosition(e: KonvaMouseEvent): Vector2d {
+    const pos = e.target.getStage()?.getPointerPosition();
+    if (!pos) throw new Error("STAGE NOT PRESENT");
+
+    return pos;
+  }
+
   const handleMouseDown = (e: KonvaMouseEvent) => {
     isDrawing.current = true;
-    const pos = e.target.getStage()?.getPointerPosition();
-    console.log("\n\nMOUSEDOWN POINT:", pos);
-    if (!pos) return;
+    const pos = getMousePosition(e);
     console.log("SETTING LINES TO:", [...lines, { points: [pos.x, pos.y] }]);
     setLines([...lines, { points: [pos.x, pos.y] }]);
   };
 
   const handleMouseMove = (e: KonvaMouseEvent) => {
     // no drawing - skipping
-    if (!isDrawing.current) {
-      return;
-    }
-    const stage = e.target.getStage();
-    if (!stage) {
-      console.log("NO STAGE");
-      return;
-    }
+    if (!isDrawing.current) return;
 
-    const point = stage.getPointerPosition();
+    const point = getMousePosition(e);
     let lastLine = lines[lines.length - 1];
     if (!lastLine?.points || !point) {
       console.log("NO LASTLINE OR NO POINT");
       return;
     }
+
     // add point
     lastLine.points = (lastLine.points as number[])
       .slice(0, 2)
       .concat([point.x, point.y]);
 
-    const spliced = lines.splice(lines.length - 1, 1, lastLine);
+    lines.splice(lines.length - 1, 1, lastLine);
     setLines(lines.slice());
   };
 
@@ -73,19 +66,6 @@ const Stage = (props: Props) => {
 
     const point = stage.getPointerPosition();
     console.log("MOUSEUP POINT:", point);
-
-    // All new
-    // let curLine = lines[lines.length - 1];
-    // curLine.points = [
-    //   curLine.points![0],
-    //   curLine.points![1],
-    //   curLine.points![-2],
-    //   curLine.points![-1],
-    // ];
-
-    // const spliced = lines.splice(lines.length - 1, 1, curLine);
-    // console.log("SPLICED:", spliced);
-    // setLines(lines.concat());
   };
 
   if (typeof window === "undefined") {
