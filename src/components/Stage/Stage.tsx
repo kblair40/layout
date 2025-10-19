@@ -9,18 +9,15 @@ import {
   Text,
   Circle,
   Line,
-  type KonvaNodeEvents,
 } from "react-konva";
 import Konva from "konva";
 import type { LineConfig } from "konva/lib/shapes/Line";
 
 type KonvaMouseEvent = Konva.KonvaEventObject<MouseEvent>;
-
 type Props = {};
 
 const DEFAULT_LINE: Partial<LineConfig> = {
-  width: 1,
-  fill: "black",
+  strokeWidth: 1,
   stroke: "black",
 };
 
@@ -29,15 +26,12 @@ const Stage = (props: Props) => {
 
   const isDrawing = useRef(false);
 
-  //   const handleMouseDown = (e: React.MouseEvent) => {
   const handleMouseDown = (e: KonvaMouseEvent) => {
-    console.log("MOUSE DOWN");
-    // if (!e?.target?.getStage()) return;
-    // if (e === null || e.target === null) return;
     isDrawing.current = true;
     const pos = e.target.getStage()?.getPointerPosition();
-    console.log("MOUSEDOWN POINT:", pos);
+    console.log("\n\nMOUSEDOWN POINT:", pos);
     if (!pos) return;
+    console.log("SETTING LINES TO:", [...lines, { points: [pos.x, pos.y] }]);
     setLines([...lines, { points: [pos.x, pos.y] }]);
   };
 
@@ -59,13 +53,12 @@ const Stage = (props: Props) => {
       return;
     }
     // add point
-    lastLine.points = (lastLine.points as number[]).concat([point.x, point.y]);
-    console.log("MOUSEMOVE POINT:", [point.x, point.y]);
-    console.log("POINTS:", lastLine.points);
-    // replace last
+    lastLine.points = (lastLine.points as number[])
+      .slice(0, 2)
+      .concat([point.x, point.y]);
+
     const spliced = lines.splice(lines.length - 1, 1, lastLine);
-    console.log("SPLICED:", spliced);
-    setLines(lines.concat());
+    setLines(lines.slice());
   };
 
   const handleMouseUp = (e: KonvaMouseEvent) => {
