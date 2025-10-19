@@ -27,10 +27,20 @@ const Stage = () => {
     return pos;
   }
 
+  function getLastLine() {
+    const lastLine = lines[lines.length - 1];
+
+    if (!lastLine) {
+      throw new Error("No line found");
+    }
+
+    return lastLine;
+  }
+
   const handleMouseDown = (e: KonvaMouseEvent) => {
+    console.log("\nMOUSE DOWN");
     isDrawing.current = true;
     const pos = getMousePosition(e);
-    console.log("SETTING LINES TO:", [...lines, { points: [pos.x, pos.y] }]);
     setLines([...lines, { points: [pos.x, pos.y] }]);
   };
 
@@ -39,11 +49,7 @@ const Stage = () => {
     if (!isDrawing.current) return;
 
     const point = getMousePosition(e);
-    let lastLine = lines[lines.length - 1];
-    if (!lastLine?.points || !point) {
-      console.log("NO LASTLINE OR NO POINT");
-      return;
-    }
+    const lastLine = getLastLine();
 
     // add point
     lastLine.points = (lastLine.points as number[])
@@ -64,8 +70,18 @@ const Stage = () => {
       return;
     }
 
-    const point = stage.getPointerPosition();
+    const point = getMousePosition(e);
+    const lastLine = getLastLine();
     console.log("MOUSEUP POINT:", point);
+
+    // add point
+    lastLine.points = (lastLine.points as number[])
+      .slice(0, 2)
+      .concat([point.x, point.y]);
+
+    lines.splice(lines.length - 1, 1, lastLine);
+    setLines(lines.slice());
+    console.log("SETTING LINES TO:", [...lines], "\n\n");
   };
 
   if (typeof window === "undefined") {
