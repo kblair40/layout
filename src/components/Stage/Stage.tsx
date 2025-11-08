@@ -128,8 +128,11 @@ const Stage = () => {
   //     return null;
   //   }
 
+  const canvas = useRef<Konva.Stage>(null);
+
   return (
     <Canvas
+      ref={canvas}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseup={handleMouseUp}
