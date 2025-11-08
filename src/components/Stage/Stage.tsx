@@ -3,6 +3,10 @@
 import "client-only";
 import React, { useState, useRef } from "react";
 import { Stage as Canvas, Layer, Rect, Text, Circle, Line } from "react-konva";
+import type { KonvaNodeComponent } from "react-konva";
+import type { LayerConfig, Layer as LayerType } from "konva/lib/Layer";
+// import type { KonvaEventObject } from "konva/lib/Node";
+import { Line as LineNode } from "konva/lib/shapes/Line";
 import Konva from "konva";
 import type { LineConfig } from "konva/lib/shapes/Line";
 import type { Vector2d } from "konva/lib/types";
@@ -17,8 +21,11 @@ const DEFAULT_LINE: Partial<LineConfig> = {
 
 const Stage = () => {
   const [lines, setLines] = useState<LineConfig[]>([]);
+  const [lineNodes, setLineNodes] = useState<LineNode[]>([]);
 
   const isDrawing = useRef(false);
+  // const layerRef = useRef<KonvaNodeComponent<LayerType, LayerConfig> | null>(
+  const layerRef = useRef<LayerType>(null);
 
   function getMousePosition(e: KonvaMouseEvent): Vector2d {
     const pos = e.target.getStage()?.getPointerPosition();
@@ -70,11 +77,12 @@ const Stage = () => {
       return;
     }
 
+    const layers = stage.getLayers();
+    console.log("LAYERS:", layers);
+
     const point = getMousePosition(e);
     const lastLine = getLastLine();
     console.log("MOUSEUP POINT:", point);
-
-    const points = lastLine.points as number[];
 
     // add point
     lastLine.points = (lastLine.points as number[])
@@ -82,15 +90,18 @@ const Stage = () => {
       .concat([point.x, point.y]);
 
     lines.splice(lines.length - 1, 1, lastLine);
-    setLines(lines.slice());
+
+    setLines(lines);
     console.log("SETTING LINES TO:", [...lines], "\n\n");
   };
 
   const handleDragStart = (e: KonvaMouseEvent) => {
     const id = e.target.id();
     console.log("Drag Start:", id);
+    e.evt.preventDefault();
     setLines(
       lines.map((line) => {
+        console.log("LINE:", line);
         return {
           ...line,
           isDragging: line.id === id,
@@ -99,6 +110,20 @@ const Stage = () => {
     );
   };
 
+  function handleMouseEnter(e: KonvaMouseEvent) {
+    console.log("E.TARGET:", {
+      target: e.target,
+      currentTarget: e.currentTarget,
+    });
+  }
+  function handleClickLine(e: KonvaMouseEvent) {
+    console.log("CLICK");
+    console.log("E.TARGET:", {
+      target: e.target,
+      currentTarget: e.currentTarget,
+    });
+  }
+
   //   if (typeof window === "undefined") {
   //     return null;
   //   }
@@ -106,13 +131,12 @@ const Stage = () => {
   return (
     <Canvas
       onMouseDown={handleMouseDown}
-      onMousemove={handleMouseMove}
+      onMouseMove={handleMouseMove}
       onMouseup={handleMouseUp}
-      //   className="border h-screen"
       width={window?.innerWidth || 0}
       height={window?.innerHeight || 0}
     >
-      <Layer>
+      <Layer ref={layerRef}>
         {lines.map((line, i) => {
           return (
             <Line
@@ -120,9 +144,16 @@ const Stage = () => {
               {...line}
               onDragStart={handleDragStart}
               key={i}
+              onMouseOver={handleMouseEnter}
+              draggable={true}
+              onClick={handleClickLine}
             />
           );
         })}
+
+        {/* {lineNodes.map((node, i) => {
+          return node.
+        })} */}
       </Layer>
     </Canvas>
   );
