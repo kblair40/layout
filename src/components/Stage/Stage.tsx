@@ -3,19 +3,13 @@
 import "client-only";
 import React, { useState, useRef } from "react";
 import { Stage as Canvas, Layer, Rect, Text, Circle, Line } from "react-konva";
-import type { KonvaNodeComponent } from "react-konva";
-import type { LayerConfig, Layer as LayerType } from "konva/lib/Layer";
-// import type { KonvaEventObject } from "konva/lib/Node";
-import { Line as LineNode } from "konva/lib/shapes/Line";
+import type { Layer as LayerType } from "konva/lib/Layer";
 import Konva from "konva";
 import type { LineConfig } from "konva/lib/shapes/Line";
-import type { Vector2d } from "konva/lib/types";
 import useEventListeners from "@/hooks/useEventListeners";
 
-type KonvaMouseEvent = Konva.KonvaEventObject<MouseEvent>;
-
 const DEFAULT_LINE: Partial<LineConfig> = {
-  strokeWidth: 1,
+  strokeWidth: 3,
   stroke: "black",
   draggable: true,
 };
@@ -53,9 +47,18 @@ const Stage = () => {
                 {...DEFAULT_LINE}
                 {...line}
                 onDragStart={listeners.handleDragStartLine}
+                onDragEnd={listeners.handleDragEndLine}
                 key={i}
                 draggable={true}
-                onClick={listeners.handleClickLine}
+                // onClick={listeners.handleClickLine}
+                onMouseEnter={(e) => {
+                  document.body.style.cursor = "pointer";
+                  setStageListenersActive(false);
+                }}
+                onMouseLeave={(e) => {
+                  document.body.style.cursor = "default";
+                  setStageListenersActive(true);
+                }}
               />
             );
           })}

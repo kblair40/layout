@@ -110,6 +110,22 @@ function useEventListeners({ refs }: { refs: Refs }) {
     );
   };
 
+  const handleDragEnd = (e: KonvaMouseEvent) => {
+    const id = e.target.id();
+    console.log("Drag End:", id);
+    console.log("Drag End Evt:", e);
+    e.evt.preventDefault();
+    // setLines(
+    //   lines.map((line) => {
+    //     console.log("LINE:", line);
+    //     return {
+    //       ...line,
+    //       isDragging: line.id === id,
+    //     };
+    //   })
+    // );
+  };
+
   function handleClickLine(e: KonvaMouseEvent) {
     console.log("CLICK");
     console.log("E.TARGET:", {
@@ -123,6 +139,7 @@ function useEventListeners({ refs }: { refs: Refs }) {
     handleMouseUpOnStage: handleMouseUp,
     handleMouseMoveOnStage: handleMouseMove,
     handleDragStartLine: handleDragStart,
+    handleDragEndLine: handleDragEnd,
     handleClickLine,
   };
 
