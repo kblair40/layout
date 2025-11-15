@@ -51,12 +51,9 @@ const Stage = () => {
               <Line
                 key={i}
                 {...DEFAULT_LINE}
-                // x={line.x}
-                // y={line.y}
                 points={line.points}
-                x={0}
-                y={0}
-                // rotation={line.rotation}
+                // x={0}
+                // y={0}
                 onDragStart={listeners.handleDragStartLine}
                 onDragEnd={listeners.handleDragEndLine}
                 onMouseEnter={(e) => {
@@ -68,28 +65,8 @@ const Stage = () => {
                   setStageListenersActive(true);
                 }}
               />
-              // <Line
-              //   {...DEFAULT_LINE}
-              //   {...line}
-              //   onDragStart={listeners.handleDragStartLine}
-              //   onDragEnd={listeners.handleDragEndLine}
-              //   key={i}
-              //   onMouseEnter={(e) => {
-              //     document.body.style.cursor = "pointer";
-              //     setStageListenersActive(false);
-              //   }}
-              //   onMouseLeave={(e) => {
-              //     document.body.style.cursor = "default";
-              //     setStageListenersActive(true);
-              //   }}
-              //   draggable={true}
-              // />
             );
           })}
-
-          {/* {lineNodes.map((node, i) => {
-          return node.
-        })} */}
         </Layer>
       </Canvas>
 
