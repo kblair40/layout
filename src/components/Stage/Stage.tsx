@@ -26,7 +26,6 @@ const Stage = () => {
     actionState,
     stageListenersActive,
     setStageListenersActive,
-    latestData,
   } = useEventListeners({ refs: { stage: canvas } });
 
   return (
@@ -104,7 +103,6 @@ const Stage = () => {
 
         <div className="absolute -top-60 right-0 bottom-0 w-60 max-h-[340px] border z-50 bg-neutral-50 overflow-y-auto">
           <pre>{JSON.stringify(lines, null, 2)}</pre>
-          {/* <pre>{JSON.stringify(latestData, null, 2)}</pre> */}
         </div>
       </div>
     </div>

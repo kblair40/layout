@@ -14,7 +14,6 @@ function useEventListeners({ refs }: { refs: Refs }) {
   const [stageListenersActive, setStageListenersActive] = useState(true);
   const [lines, setLines] = useState<LineConfig[]>([]);
   const [dragging, setDragging] = useState(false);
-  const [latestData, setLatestData] = useState<Record<string, any>>({});
 
   const isDrawing = useRef(false);
 
@@ -156,7 +155,6 @@ function useEventListeners({ refs }: { refs: Refs }) {
     stageListenersActive,
     actionState,
     setStageListenersActive,
-    latestData,
   };
 }
 
