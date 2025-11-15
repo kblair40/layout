@@ -51,9 +51,10 @@ const Stage = () => {
               <Line
                 key={i}
                 {...DEFAULT_LINE}
-                points={line.points}
                 // x={0}
                 // y={0}
+                id={line.id}
+                points={line.points}
                 onDragStart={listeners.handleDragStartLine}
                 onDragEnd={listeners.handleDragEndLine}
                 onMouseEnter={(e) => {
