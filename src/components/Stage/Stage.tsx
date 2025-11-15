@@ -20,8 +20,14 @@ const Stage = () => {
 
   const canvas = useRef<Konva.Stage>(null);
 
-  const { listeners, lines, stageListenersActive, setStageListenersActive } =
-    useEventListeners({ refs: { stage: canvas } });
+  const {
+    listeners,
+    lines,
+    actionState,
+    stageListenersActive,
+    setStageListenersActive,
+    latestData,
+  } = useEventListeners({ refs: { stage: canvas } });
 
   return (
     <div>
@@ -44,13 +50,16 @@ const Stage = () => {
           {lines.map((line, i) => {
             return (
               <Line
+                key={i}
                 {...DEFAULT_LINE}
-                {...line}
+                // x={line.x}
+                // y={line.y}
+                points={line.points}
+                x={0}
+                y={0}
+                // rotation={line.rotation}
                 onDragStart={listeners.handleDragStartLine}
                 onDragEnd={listeners.handleDragEndLine}
-                key={i}
-                draggable={true}
-                // onClick={listeners.handleClickLine}
                 onMouseEnter={(e) => {
                   document.body.style.cursor = "pointer";
                   setStageListenersActive(false);
@@ -60,6 +69,22 @@ const Stage = () => {
                   setStageListenersActive(true);
                 }}
               />
+              // <Line
+              //   {...DEFAULT_LINE}
+              //   {...line}
+              //   onDragStart={listeners.handleDragStartLine}
+              //   onDragEnd={listeners.handleDragEndLine}
+              //   key={i}
+              //   onMouseEnter={(e) => {
+              //     document.body.style.cursor = "pointer";
+              //     setStageListenersActive(false);
+              //   }}
+              //   onMouseLeave={(e) => {
+              //     document.body.style.cursor = "default";
+              //     setStageListenersActive(true);
+              //   }}
+              //   draggable={true}
+              // />
             );
           })}
 
@@ -69,13 +94,18 @@ const Stage = () => {
         </Layer>
       </Canvas>
 
-      <div className="h-[100px] flex items-center gap-x-4 px-4">
+      <div className="h-[100px] flex items-center gap-x-4 px-4 relative">
         <button
           className="border px-2 py-1 flex justify-center items-center rounded-sm bg-white transition-colors hover:bg-neutral-100 duration-150 cursor-pointer active:bg-neutral-200"
           onClick={() => setStageListenersActive((cur) => !cur)}
         >
           {stageListenersActive ? "disable" : "enable"} stage listeners
         </button>
+
+        <div className="absolute -top-60 right-0 bottom-0 w-60 max-h-[340px] border z-50 bg-neutral-50 overflow-y-auto">
+          <pre>{JSON.stringify(lines, null, 2)}</pre>
+          {/* <pre>{JSON.stringify(latestData, null, 2)}</pre> */}
+        </div>
       </div>
     </div>
   );

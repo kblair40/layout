@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState, useEffect, type RefObject } from "react";
+import { useRef, useState, type RefObject } from "react";
 import type { LineConfig } from "konva/lib/shapes/Line";
 import type { Vector2d } from "konva/lib/types";
 import Konva from "konva";
@@ -13,10 +13,10 @@ type Refs = {
 function useEventListeners({ refs }: { refs: Refs }) {
   const [stageListenersActive, setStageListenersActive] = useState(true);
   const [lines, setLines] = useState<LineConfig[]>([]);
+  const [dragging, setDragging] = useState(false);
+  const [latestData, setLatestData] = useState<Record<string, any>>({});
 
   const isDrawing = useRef(false);
-
-  //   }, [refs]);
 
   function getMousePosition(e: KonvaMouseEvent): Vector2d {
     const pos = e.target.getStage()?.getPointerPosition();
@@ -82,39 +82,42 @@ function useEventListeners({ refs }: { refs: Refs }) {
 
     lines.splice(lines.length - 1, 1, lastLine);
 
-    setLines(lines);
     console.log("SETTING LINES TO:", [...lines], "\n\n");
   };
 
-  useEffect(() => {
-    console.log("Stage change:", refs.stage.current);
-    const stage = refs.stage.current;
-    // if (stage) {
-    //   stage.addEventListener("mousedown", handleMouseDown);
-    //   stage.add;
-    // }
-  }, []);
-
   const handleDragStart = (e: KonvaMouseEvent) => {
+    setDragging(true);
     const id = e.target.id();
     console.log("Drag Start:", id);
-    e.evt.preventDefault();
-    setLines(
-      lines.map((line) => {
-        console.log("LINE:", line);
-        return {
-          ...line,
-          isDragging: line.id === id,
-        };
-      })
-    );
   };
 
   const handleDragEnd = (e: KonvaMouseEvent) => {
-    const id = e.target.id();
-    console.log("Drag End:", id);
+    const line = e.target;
     console.log("Drag End Evt:", e);
     e.evt.preventDefault();
+
+    const position = line.position();
+    const points = line.attrs.points;
+
+    const newPoints = points.map((point: number, index: number) => {
+      if (index % 2 === 0) {
+        console.log("returning:", point + position.x);
+        return point + position.x;
+      }
+      return point + position.y;
+    });
+    console.log("Points After:", newPoints);
+
+    setLines([{ points }]);
+
+    // console.log("Drag End Latest Data:", {
+    //   points: line.attrs.points,
+    //   getAbsolutePosition: line.getAbsolutePosition(),
+    //   getAbsoluteTransform: line.getAbsoluteTransform().m,
+    //   x: line.x(),
+    //   y: line.y(),
+    // });
+
     // setLines(
     //   lines.map((line) => {
     //     console.log("LINE:", line);
@@ -124,15 +127,19 @@ function useEventListeners({ refs }: { refs: Refs }) {
     //     };
     //   })
     // );
+    setDragging(false);
   };
 
   function handleClickLine(e: KonvaMouseEvent) {
-    console.log("CLICK");
-    console.log("E.TARGET:", {
+    console.log("CLICKED LINE - E.TARGET:", {
       target: e.target,
       currentTarget: e.currentTarget,
     });
   }
+
+  const actionState = {
+    isDragging: dragging,
+  };
 
   const listeners = {
     handleMouseDownOnStage: handleMouseDown,
@@ -147,7 +154,9 @@ function useEventListeners({ refs }: { refs: Refs }) {
     listeners,
     lines,
     stageListenersActive,
+    actionState,
     setStageListenersActive,
+    latestData,
   };
 }
 
