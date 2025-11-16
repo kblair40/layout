@@ -112,6 +112,15 @@ function useEventListeners() {
     });
     console.log("Points After:", newPoints);
 
+    if (stage.current) {
+      console.log("Stage:", {
+        children: stage.current.getChildren(),
+        getClientRect: stage.current.getClientRect(),
+        getAbsolutePosition: e.target.getAbsolutePosition(stage.current),
+        getAbsoluteTransform: e.target.getAbsoluteTransform(stage.current),
+      });
+    }
+
     setLines([{ points }]);
     setDragging(false);
   };
