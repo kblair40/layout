@@ -1,21 +1,22 @@
 "use client";
-import { useRef, useState, type RefObject } from "react";
+import { useRef, useState } from "react";
 import type { LineConfig } from "konva/lib/shapes/Line";
 import type { Vector2d } from "konva/lib/types";
 import Konva from "konva";
 
 type KonvaMouseEvent = Konva.KonvaEventObject<MouseEvent>;
 
-type Refs = {
-  stage: RefObject<Konva.Stage | null>;
-};
-
-function useEventListeners({ refs }: { refs: Refs }) {
+function useEventListeners() {
   const [stageListenersActive, setStageListenersActive] = useState(true);
   const [lines, setLines] = useState<LineConfig[]>([]);
   const [dragging, setDragging] = useState(false);
 
+  const stage = useRef<Konva.Stage>(null);
   const isDrawing = useRef(false);
+
+  function setStage(_stage: Konva.Stage) {
+    stage.current = _stage;
+  }
 
   function getMousePosition(e: KonvaMouseEvent): Vector2d {
     const pos = e.target.getStage()?.getPointerPosition();
@@ -180,6 +181,7 @@ function useEventListeners({ refs }: { refs: Refs }) {
     stageListenersActive,
     actionState,
     setStageListenersActive,
+    setStage,
   };
 }
 

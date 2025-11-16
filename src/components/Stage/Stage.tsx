@@ -1,7 +1,7 @@
 "use client";
 
 import "client-only";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Stage as Canvas, Layer, Rect, Text, Circle, Line } from "react-konva";
 import type { Layer as LayerType } from "konva/lib/Layer";
 import Konva from "konva";
@@ -15,10 +15,12 @@ const DEFAULT_LINE: Partial<LineConfig> = {
 };
 
 const Stage = () => {
-  const isDrawing = useRef(false);
   const layerRef = useRef<LayerType>(null);
-
   const canvas = useRef<Konva.Stage>(null);
+
+  useEffect(() => {
+    if (canvas.current) setStage(canvas.current);
+  }, []);
 
   const {
     listeners,
@@ -26,7 +28,8 @@ const Stage = () => {
     actionState,
     stageListenersActive,
     setStageListenersActive,
-  } = useEventListeners({ refs: { stage: canvas } });
+    setStage,
+  } = useEventListeners();
 
   return (
     <div>
