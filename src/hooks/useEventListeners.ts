@@ -39,6 +39,7 @@ function useEventListeners() {
     console.log("\nMOUSE DOWN", e.target.id());
     isDrawing.current = true;
     const pos = getMousePosition(e);
+    console.log("MOUSE POSITION:", pos);
     setLines([
       ...lines,
       { points: [pos.x, pos.y], id: lines.length.toString() },
@@ -91,8 +92,8 @@ function useEventListeners() {
   const handleDragStart = (e: KonvaMouseEvent) => {
     setDragging(true);
     e.evt.preventDefault();
-    console.log("Drag Start:", e.target.id());
-    // const id = e.target.id();
+    console.log("\n\n\nDrag Start:", e.target.id());
+    console.log("Points Before:", e.target.attrs?.points);
   };
 
   const handleDragEnd = (e: KonvaMouseEvent) => {
@@ -121,7 +122,7 @@ function useEventListeners() {
       });
     }
 
-    setLines([{ points }]);
+    setLines([{ points, id: line.id() }]);
     setDragging(false);
   };
 
