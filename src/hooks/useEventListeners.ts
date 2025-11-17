@@ -41,11 +41,18 @@ function useEventListeners() {
     isDrawing.current = true;
     const pos = getMousePosition(e);
     console.log("MOUSE POSITION:", pos);
-    setLines([
-      ...lines,
-      { points: [pos.x, pos.y], id: lines.length.toString() },
-    ]);
     mouseStart.current = pos;
+    setLines((cur) => {
+      // console.log("MOUSEDOWN setting lines to:", [
+      //   ...cur,
+      //   { points: [pos.x, pos.y], id: lines.length.toString() },
+      // ]);
+      return [...cur, { points: [pos.x, pos.y], id: lines.length.toString() }];
+    });
+    // setLines([
+    //   ...lines,
+    //   { points: [pos.x, pos.y], id: lines.length.toString() },
+    // ]);
   };
 
   const handleMouseMove = (e: KonvaMouseEvent) => {
@@ -60,19 +67,31 @@ function useEventListeners() {
       .slice(0, 2)
       .concat([point.x, point.y]);
 
-    lines.splice(lines.length - 1, 1, lastLine);
-    setLines(lines.slice());
+    setLines((cur) => {
+      console.log("MOVE: length before:", [...cur].length);
+      cur = cur.slice(0, cur.length - 1);
+      console.log("Length after:", [...cur].length);
+      console.log("pushing:", lastLine);
+      cur.push(lastLine);
+      // return cur;
+      return [...cur];
+
+      return [];
+    });
+
+    // lines.splice(lines.length - 1, 1, lastLine);
+    // setLines(lines.slice());
   };
 
   const handleMouseUp = (e: KonvaMouseEvent) => {
+    if (e.target.getType() !== "Stage") {
+      console.log("Not on stage. No Mouse Up Event");
+      return;
+    }
     console.log("MOUSE UP", e.target.getType(), {
       type: e.type,
       target: e.target,
     });
-    if (e.target.getType() !== "Stage") {
-      console.log("Not on stage. Returning early");
-      return;
-    }
     isDrawing.current = false;
 
     const stage = e.target.getStage();
@@ -81,8 +100,8 @@ function useEventListeners() {
       return;
     }
 
-    const layers = stage.getLayers();
-    console.log("LAYERS:", layers);
+    // const layers = stage.getLayers();
+    // console.log("LAYERS:", layers);
 
     const { x, y } = mouseStart.current || {}; // new
     const point = getMousePosition(e);
@@ -90,15 +109,26 @@ function useEventListeners() {
       Math.abs((x || 0) - point.x),
       Math.abs((y || 0) - point.y)
     ); // new
+    console.log("Dist:", dist);
 
     // const curLines = lines.map((pt) => JSON.parse(JSON.stringify(pt)));
 
     // new
     if (dist < 5) {
+      if (lines.length === 1) {
+        console.log("SETTING LINES EMPTY");
+        setLines([]);
+        return;
+      }
+
+      console.log("Before pop:", [...lines].length);
+      lines.pop();
+      console.log("After pop:", [...lines].length);
+      setLines([...lines]);
+      mouseStart.current = null;
       return;
     }
 
-    console.log("Dist:", dist);
     const lastLine = getLastLine();
     console.log("MOUSEUP POINT:", point);
 

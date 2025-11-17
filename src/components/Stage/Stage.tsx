@@ -84,8 +84,18 @@ const Stage = () => {
           {stageListenersActive ? "disable" : "enable"} stage listeners
         </button>
 
+        <div># of Lines = {lines.length}</div>
+
         <div className="absolute -top-60 right-0 bottom-0 w-60 max-h-[340px] border z-50 bg-neutral-50 overflow-y-auto">
-          <pre>{JSON.stringify(lines, null, 2)}</pre>
+          {/* <pre>{JSON.stringify(lines, null, 2)}</pre> */}
+          {lines.map((l, i) => {
+            return (
+              <div key={i}>
+                {`Line ${l.id} =`}
+                <pre>{JSON.stringify(l, null, 2)}</pre>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
