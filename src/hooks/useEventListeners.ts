@@ -13,6 +13,7 @@ function useEventListeners() {
 
   const stage = useRef<Konva.Stage>(null);
   const isDrawing = useRef(false);
+  const mouseStart = useRef<Vector2d>(null);
 
   function setStage(_stage: Konva.Stage) {
     stage.current = _stage;
@@ -44,6 +45,7 @@ function useEventListeners() {
       ...lines,
       { points: [pos.x, pos.y], id: lines.length.toString() },
     ]);
+    mouseStart.current = pos;
   };
 
   const handleMouseMove = (e: KonvaMouseEvent) => {
@@ -63,7 +65,14 @@ function useEventListeners() {
   };
 
   const handleMouseUp = (e: KonvaMouseEvent) => {
-    console.log("MOUSE UP");
+    console.log("MOUSE UP", e.target.getType(), {
+      type: e.type,
+      target: e.target,
+    });
+    if (e.target.getType() !== "Stage") {
+      console.log("Not on stage. Returning early");
+      return;
+    }
     isDrawing.current = false;
 
     const stage = e.target.getStage();
@@ -75,7 +84,21 @@ function useEventListeners() {
     const layers = stage.getLayers();
     console.log("LAYERS:", layers);
 
+    const { x, y } = mouseStart.current || {}; // new
     const point = getMousePosition(e);
+    const dist = Math.max(
+      Math.abs((x || 0) - point.x),
+      Math.abs((y || 0) - point.y)
+    ); // new
+
+    // const curLines = lines.map((pt) => JSON.parse(JSON.stringify(pt)));
+
+    // new
+    if (dist < 5) {
+      return;
+    }
+
+    console.log("Dist:", dist);
     const lastLine = getLastLine();
     console.log("MOUSEUP POINT:", point);
 
@@ -85,8 +108,10 @@ function useEventListeners() {
       .concat([point.x, point.y]);
 
     lines.splice(lines.length - 1, 1, lastLine);
+    setLines(lines);
 
     console.log("SETTING LINES TO:", [...lines], "\n\n");
+    mouseStart.current = null;
   };
 
   const handleDragStart = (e: KonvaMouseEvent) => {
