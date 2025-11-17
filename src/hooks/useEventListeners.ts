@@ -113,18 +113,24 @@ function useEventListeners() {
     });
     console.log("Points After:", newPoints);
 
-    if (stage.current) {
-      console.log("Stage:", {
-        children: stage.current.getChildren(),
-        getClientRect: stage.current.getClientRect(),
-        getAbsolutePosition: e.target.getAbsolutePosition(stage.current),
-        getAbsoluteTransform: e.target.getAbsoluteTransform(stage.current),
-      });
-    }
+    logStage(e);
 
     setLines([{ points, id: line.id() }]);
     setDragging(false);
   };
+
+  function logStage(e?: KonvaMouseEvent) {
+    if (stage.current) {
+      console.log("Stage:", {
+        children: stage.current.getChildren(),
+        getClientRect: stage.current.getClientRect(),
+        getAbsolutePosition:
+          e?.target.getAbsolutePosition(stage.current) || undefined,
+        getAbsoluteTransform:
+          e?.target.getAbsoluteTransform(stage.current) || undefined,
+      });
+    }
+  }
 
   // const handleDragEnd = (e: KonvaMouseEvent) => {
   //   const line = e.target;
