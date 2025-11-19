@@ -163,7 +163,7 @@ function useEventListeners() {
       return;
     }
 
-    const linesCopy = JSON.parse(JSON.stringify(lines));
+    const linesCopy = getLinesClone();
     linesCopy[lineIndex] = { points: line.points(), id };
 
     setLines(linesCopy);
