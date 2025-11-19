@@ -3,7 +3,6 @@
 import "client-only";
 import React, { useState, useRef, useEffect } from "react";
 import { Stage as Canvas, Layer, Rect, Text, Circle, Line } from "react-konva";
-import type { Layer as LayerType } from "konva/lib/Layer";
 import Konva from "konva";
 import type { LineConfig } from "konva/lib/shapes/Line";
 import useEventListeners from "@/hooks/useEventListeners";
@@ -15,8 +14,36 @@ const DEFAULT_LINE: Partial<LineConfig> = {
 };
 
 const Stage = () => {
-  const layerRef = useRef<LayerType>(null);
+  const layer = useRef<Konva.Layer>(null);
   const canvas = useRef<Konva.Stage>(null);
+
+  function listLines() {
+    if (!layer.current || !canvas.current) {
+      console.log("No Layer");
+      return;
+    }
+
+    const children = layer.current.getChildren();
+    console.log(
+      "\nChildren:",
+      children,
+      "type =",
+      typeof children,
+      "isArray =",
+      Array.isArray(children)
+    );
+
+    for (let child of children) {
+      if (child instanceof Konva.Line) {
+        console.log("Found LINE:", child.attrs.points);
+
+        console.log({
+          pos: child.getAbsolutePosition(canvas.current),
+          transform: child.getAbsoluteTransform(canvas.current),
+        });
+      }
+    }
+  }
 
   useEffect(() => {
     if (canvas.current) setStage(canvas.current);
@@ -48,7 +75,7 @@ const Stage = () => {
         width={window?.innerWidth || 0}
         height={window?.innerHeight - 100 || 0}
       >
-        <Layer ref={layerRef}>
+        <Layer ref={layer}>
           {lines.map((line, i) => {
             return (
               <Line
@@ -85,6 +112,15 @@ const Stage = () => {
         </button>
 
         <div># of Lines = {lines.length}</div>
+
+        <div className="pl-4">
+          <button
+            className="border px-2 py-1 flex justify-center items-center rounded-sm bg-white transition-colors hover:bg-neutral-100 duration-150 cursor-pointer active:bg-neutral-200"
+            onClick={listLines}
+          >
+            List Lines
+          </button>
+        </div>
 
         <div className="absolute -top-60 right-0 bottom-0 w-60 max-h-[340px] border z-50 bg-neutral-50 overflow-y-auto">
           {/* <pre>{JSON.stringify(lines, null, 2)}</pre> */}

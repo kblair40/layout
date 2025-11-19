@@ -158,6 +158,8 @@ function useEventListeners() {
 
     const position = line.position();
     const points = line.attrs.points;
+    console.log("Point attrs:", points);
+    console.log("position:", position);
 
     const newPoints = points.map((point: number, index: number) => {
       if (index % 2 === 0) {
@@ -170,7 +172,20 @@ function useEventListeners() {
 
     logStage(e);
 
-    setLines([{ points, id: line.id() }]);
+    // if (stage.current) {
+    //   const pos = e?.target.getAbsolutePosition(stage.current);
+    //   setLines([{ points: newPoints, id: line.id(), x: pos.x, y: pos.y }]);
+    // } else {
+    //   setLines([{ points: newPoints, id: line.id() }]);
+    // }
+
+    // setLines([{ points: newPoints, id: line.id() }]);
+    setLines((curLines) => {
+      const cur = JSON.parse(JSON.stringify(curLines));
+      //
+      return [...curLines];
+    });
+    // setLines([{ points, id: line.id() }]);
     setDragging(false);
   };
 
