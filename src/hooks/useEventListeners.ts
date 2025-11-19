@@ -75,8 +75,6 @@ function useEventListeners() {
       cur.push(lastLine);
       // return cur;
       return [...cur];
-
-      return [];
     });
 
     // lines.splice(lines.length - 1, 1, lastLine);
@@ -152,42 +150,72 @@ function useEventListeners() {
   };
 
   const handleDragEnd = (e: KonvaMouseEvent) => {
-    const line = e.target;
+    const line = e.target as Konva.Line;
     console.log("Drag End Evt:", e, { id: line.id() });
     e.evt.preventDefault();
 
-    const position = line.position();
+    const id = line.id();
+    const lineIndex = lines.findIndex((l) => l.id === id);
+    console.log("LINE INDEX:", lineIndex);
+    const x = line.x();
+    const y = line.y();
     const points = line.attrs.points;
     console.log("Point attrs:", points);
-    console.log("position:", position);
+    console.log("position:", { x, y });
 
-    const newPoints = points.map((point: number, index: number) => {
+    const newPoints = points.map((pt: number, index: number) => {
       if (index % 2 === 0) {
-        console.log("returning:", point + position.x);
-        return point + position.x;
+        console.log("returning:", pt + x);
+        return pt + x;
       }
-      return point + position.y;
+      return pt + y;
     });
     console.log("Points After:", newPoints);
 
-    logStage(e);
+    line.points(newPoints);
+    line.x(0);
+    line.y(0);
 
-    // if (stage.current) {
-    //   const pos = e?.target.getAbsolutePosition(stage.current);
-    //   setLines([{ points: newPoints, id: line.id(), x: pos.x, y: pos.y }]);
-    // } else {
-    //   setLines([{ points: newPoints, id: line.id() }]);
-    // }
+    if (lineIndex === -1) {
+      console.warn("LINE NOT FOUND");
+      return;
+    }
 
-    // setLines([{ points: newPoints, id: line.id() }]);
-    setLines((curLines) => {
-      const cur = JSON.parse(JSON.stringify(curLines));
-      //
-      return [...curLines];
-    });
-    // setLines([{ points, id: line.id() }]);
+    const linesCopy = JSON.parse(JSON.stringify(lines));
+    linesCopy[lineIndex] = { points: line.points(), id };
+
+    setLines(linesCopy);
+
     setDragging(false);
   };
+
+  // const handleDragEnd = (e: KonvaMouseEvent) => {
+  //   const line = e.target;
+  //   console.log("Drag End Evt:", e, { id: line.id() });
+  //   e.evt.preventDefault();
+
+  //   const position = line.position();
+  //   const points = line.attrs.points;
+  //   console.log("Point attrs:", points);
+  //   console.log("position:", position);
+
+  //   const newPoints = points.map((point: number, index: number) => {
+  //     if (index % 2 === 0) {
+  //       console.log("returning:", point + position.x);
+  //       return point + position.x;
+  //     }
+  //     return point + position.y;
+  //   });
+  //   console.log("Points After:", newPoints);
+
+  //   logStage(e);
+
+  //   setLines((curLines) => {
+  //     const cur = JSON.parse(JSON.stringify(curLines));
+  //     return [...curLines];
+  //   });
+  //   setDragging(false);
+  // };
 
   function logStage(e?: KonvaMouseEvent) {
     if (stage.current) {

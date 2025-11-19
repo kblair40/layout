@@ -81,10 +81,10 @@ const Stage = () => {
               <Line
                 key={i}
                 {...DEFAULT_LINE}
-                // x={0}
-                // y={0}
-                x={line.x || 0}
-                y={line.y || 0}
+                x={0}
+                y={0}
+                // x={line.x || 0}
+                // y={line.y || 0}
                 id={line.id}
                 points={line.points}
                 onDragStart={listeners.handleDragStartLine}
