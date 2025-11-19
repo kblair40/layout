@@ -26,6 +26,10 @@ function useEventListeners() {
     return pos;
   }
 
+  function getLinesClone() {
+    return JSON.parse(JSON.stringify(lines));
+  }
+
   function getLastLine() {
     const lastLine = lines[lines.length - 1];
 
@@ -37,22 +41,14 @@ function useEventListeners() {
   }
 
   const handleMouseDown = (e: KonvaMouseEvent) => {
-    console.log("\nMOUSE DOWN", e.target.id());
+    console.log("MOUSE DOWN");
     isDrawing.current = true;
     const pos = getMousePosition(e);
     console.log("MOUSE POSITION:", pos);
     mouseStart.current = pos;
     setLines((cur) => {
-      // console.log("MOUSEDOWN setting lines to:", [
-      //   ...cur,
-      //   { points: [pos.x, pos.y], id: lines.length.toString() },
-      // ]);
       return [...cur, { points: [pos.x, pos.y], id: lines.length.toString() }];
     });
-    // setLines([
-    //   ...lines,
-    //   { points: [pos.x, pos.y], id: lines.length.toString() },
-    // ]);
   };
 
   const handleMouseMove = (e: KonvaMouseEvent) => {
@@ -73,12 +69,8 @@ function useEventListeners() {
       console.log("Length after:", [...cur].length);
       console.log("pushing:", lastLine);
       cur.push(lastLine);
-      // return cur;
       return [...cur];
     });
-
-    // lines.splice(lines.length - 1, 1, lastLine);
-    // setLines(lines.slice());
   };
 
   const handleMouseUp = (e: KonvaMouseEvent) => {
@@ -86,10 +78,7 @@ function useEventListeners() {
       console.log("Not on stage. No Mouse Up Event");
       return;
     }
-    console.log("MOUSE UP", e.target.getType(), {
-      type: e.type,
-      target: e.target,
-    });
+    console.log("MOUSE UP");
     isDrawing.current = false;
 
     const stage = e.target.getStage();
@@ -97,9 +86,6 @@ function useEventListeners() {
       console.log("NO STAGE");
       return;
     }
-
-    // const layers = stage.getLayers();
-    // console.log("LAYERS:", layers);
 
     const { x, y } = mouseStart.current || {}; // new
     const point = getMousePosition(e);
@@ -109,8 +95,6 @@ function useEventListeners() {
     ); // new
     console.log("Dist:", dist);
 
-    // const curLines = lines.map((pt) => JSON.parse(JSON.stringify(pt)));
-
     // new
     if (dist < 5) {
       if (lines.length === 1) {
@@ -119,9 +103,7 @@ function useEventListeners() {
         return;
       }
 
-      console.log("Before pop:", [...lines].length);
       lines.pop();
-      console.log("After pop:", [...lines].length);
       setLines([...lines]);
       mouseStart.current = null;
       return;
