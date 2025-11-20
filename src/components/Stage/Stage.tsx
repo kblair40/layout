@@ -2,7 +2,15 @@
 
 import "client-only";
 import React, { useState, useRef, useEffect } from "react";
-import { Stage as Canvas, Layer, Rect, Text, Circle, Line } from "react-konva";
+import {
+  Stage as Canvas,
+  Layer,
+  Rect,
+  Text,
+  Circle,
+  Line,
+  Group,
+} from "react-konva";
 import Konva from "konva";
 import type { LineConfig } from "konva/lib/shapes/Line";
 import { Portal } from "react-konva-utils";
@@ -121,6 +129,7 @@ const Stage = () => {
               />
             )}
           </Portal>
+          <Group name="top" />
         </Layer>
       </Canvas>
 
@@ -144,7 +153,6 @@ const Stage = () => {
         </div>
 
         <div className="absolute -top-60 right-0 bottom-0 w-60 max-h-[340px] border z-50 bg-neutral-50 overflow-y-auto">
-          {/* <pre>{JSON.stringify(lines, null, 2)}</pre> */}
           {lines.map((l, i) => {
             return (
               <div key={i}>
