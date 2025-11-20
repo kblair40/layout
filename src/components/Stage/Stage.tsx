@@ -13,7 +13,7 @@ import {
 } from "react-konva";
 import Konva from "konva";
 import type { LineConfig } from "konva/lib/shapes/Line";
-import { Portal } from "react-konva-utils";
+import { Portal, Html } from "react-konva-utils";
 
 import useEventListeners from "@/hooks/useEventListeners";
 
@@ -116,17 +116,65 @@ const Stage = () => {
             {/* content of that portal will be moved into "top" group*/}
             {/* <Rect width={100} height={100} fill="red" draggable /> */}
 
+            {/* {selectedLine && (
+              <>
+                <Rect
+                  stroke="#010c0d"
+                  fill="#f8f8f8"
+                  strokeWidth={2}
+                  width={200}
+                  height={100}
+                  // Subtract 50% of width and 100% of height
+                  x={selectedLine.x - 50}
+                  y={selectedLine.y - 100}
+                ></Rect>
+                <Circle
+                  x={selectedLine.x - 20}
+                  y={selectedLine.y - 50}
+                  stroke="#000"
+                  strokeWidth={2}
+                  width={25}
+                  height={25}
+                />
+              </>
+            )} */}
+
             {selectedLine && (
-              <Rect
-                stroke="#010c0d"
-                fill="#f8f8f8"
-                strokeWidth={2}
-                width={200}
-                height={100}
-                // Subtract 50% of width and 100% of height
-                x={selectedLine.x - 100}
-                y={selectedLine.y - 100}
-              />
+              // Subtract 50% of width and 100% of height
+              <Group x={selectedLine.x - 100} y={selectedLine.y - 100}>
+                <Rect
+                  stroke="#010c0d"
+                  fill="#f8f8f8"
+                  strokeWidth={2}
+                  width={200}
+                  height={100}
+                  // Subtract 50% of width and 100% of height
+                  // x={selectedLine.x - 50}
+                  // y={selectedLine.y - 100}
+                ></Rect>
+                <Circle
+                  // x={selectedLine.x - 20}
+                  // y={selectedLine.y - 50}
+                  stroke="#000"
+                  strokeWidth={2}
+                  width={25}
+                  height={25}
+                />
+              </Group>
+            )}
+
+            {selectedLine && (
+              <Html>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: selectedLine.y,
+                    left: selectedLine.x,
+                  }}
+                >
+                  TEST
+                </div>
+              </Html>
             )}
           </Portal>
           <Group name="top" />
