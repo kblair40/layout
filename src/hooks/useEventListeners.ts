@@ -30,16 +30,6 @@ function useEventListeners() {
     return JSON.parse(JSON.stringify(lines));
   }
 
-  function getLineById(
-    id: string
-  ):
-    | { lineIndex: -1; line: undefined }
-    | { lineIndex: number; line: LineConfig } {
-    const lineIndex = lines.findIndex((l) => l.id === id);
-
-    return { lineIndex, line: lines[lineIndex] };
-  }
-
   function getLastLine() {
     const lastLine = lines[lines.length - 1];
 
