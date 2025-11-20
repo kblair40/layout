@@ -30,6 +30,16 @@ function useEventListeners() {
     return JSON.parse(JSON.stringify(lines));
   }
 
+  function getLineById(
+    id: string
+  ):
+    | { lineIndex: -1; line: undefined }
+    | { lineIndex: number; line: LineConfig } {
+    const lineIndex = lines.findIndex((l) => l.id === id);
+
+    return { lineIndex, line: lines[lineIndex] };
+  }
+
   function getLastLine() {
     const lastLine = lines[lines.length - 1];
 
@@ -138,12 +148,9 @@ function useEventListeners() {
 
     const id = line.id();
     const lineIndex = lines.findIndex((l) => l.id === id);
-    console.log("LINE INDEX:", lineIndex);
     const x = line.x();
     const y = line.y();
     const points = line.attrs.points;
-    console.log("Point attrs:", points);
-    console.log("position:", { x, y });
 
     const newPoints = points.map((pt: number, index: number) => {
       if (index % 2 === 0) {
