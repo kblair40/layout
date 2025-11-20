@@ -5,6 +5,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { Stage as Canvas, Layer, Rect, Text, Circle, Line } from "react-konva";
 import Konva from "konva";
 import type { LineConfig } from "konva/lib/shapes/Line";
+import { Portal } from "react-konva-utils";
+
 import useEventListeners from "@/hooks/useEventListeners";
 
 const DEFAULT_LINE: Partial<LineConfig> = {
@@ -102,16 +104,23 @@ const Stage = () => {
             );
           })}
 
-          {selectedLine && (
-            <Rect
-              stroke="#010c0d"
-              strokeWidth={2}
-              width={200}
-              height={100}
-              x={selectedLine.x - 100}
-              y={selectedLine.y - 100}
-            />
-          )}
+          <Portal selector=".top">
+            {/* content of that portal will be moved into "top" group*/}
+            {/* <Rect width={100} height={100} fill="red" draggable /> */}
+
+            {selectedLine && (
+              <Rect
+                stroke="#010c0d"
+                fill="#f8f8f8"
+                strokeWidth={2}
+                width={200}
+                height={100}
+                // Subtract 50% of width and 100% of height
+                x={selectedLine.x - 100}
+                y={selectedLine.y - 100}
+              />
+            )}
+          </Portal>
         </Layer>
       </Canvas>
 
