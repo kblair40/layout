@@ -10,7 +10,11 @@ function useEventListeners() {
   const [stageListenersActive, setStageListenersActive] = useState(true);
   const [lines, setLines] = useState<LineConfig[]>([]);
   const [dragging, setDragging] = useState(false);
-  const [selectedLine, setSelectedLine] = useState<string>();
+  const [selectedLine, setSelectedLine] = useState<{
+    id: string;
+    x: number;
+    y: number;
+  }>();
 
   const stage = useRef<Konva.Stage>(null);
   const isDrawing = useRef(false);
@@ -187,7 +191,8 @@ function useEventListeners() {
       target: e.target,
       currentTarget: e.currentTarget,
     });
-    setSelectedLine(e.target.id());
+    const points = e.target.attrs.points;
+    setSelectedLine({ id: e.target.id(), x: points[0], y: points[1] });
   }
 
   const actionState = {

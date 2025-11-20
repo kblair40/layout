@@ -97,10 +97,21 @@ const Stage = () => {
                   setStageListenersActive(true);
                 }}
                 onClick={listeners.handleClickLine}
-                stroke={selectedLine === line.id ? "#19a" : "#000"}
+                stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
               />
             );
           })}
+
+          {selectedLine && (
+            <Rect
+              stroke="#010c0d"
+              strokeWidth={2}
+              width={200}
+              height={100}
+              x={selectedLine.x - 100}
+              y={selectedLine.y - 100}
+            />
+          )}
         </Layer>
       </Canvas>
 
@@ -135,7 +146,10 @@ const Stage = () => {
           })}
         </div>
 
-        <p>selectedLine: {selectedLine}</p>
+        <pre>
+          selectedLine:
+          {selectedLine ? JSON.stringify(selectedLine) : null}
+        </pre>
       </div>
     </div>
   );
