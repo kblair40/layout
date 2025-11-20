@@ -54,6 +54,7 @@ const Stage = () => {
     lines,
     actionState,
     stageListenersActive,
+    selectedLine,
     setStageListenersActive,
     setStage,
   } = useEventListeners();
@@ -83,8 +84,6 @@ const Stage = () => {
                 {...DEFAULT_LINE}
                 x={0}
                 y={0}
-                // x={line.x || 0}
-                // y={line.y || 0}
                 id={line.id}
                 points={line.points}
                 onDragStart={listeners.handleDragStartLine}
@@ -97,6 +96,8 @@ const Stage = () => {
                   document.body.style.cursor = "default";
                   setStageListenersActive(true);
                 }}
+                onClick={listeners.handleClickLine}
+                stroke={selectedLine === line.id ? "#19a" : "#000"}
               />
             );
           })}
@@ -133,6 +134,8 @@ const Stage = () => {
             );
           })}
         </div>
+
+        <p>selectedLine: {selectedLine}</p>
       </div>
     </div>
   );

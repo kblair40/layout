@@ -10,6 +10,7 @@ function useEventListeners() {
   const [stageListenersActive, setStageListenersActive] = useState(true);
   const [lines, setLines] = useState<LineConfig[]>([]);
   const [dragging, setDragging] = useState(false);
+  const [selectedLine, setSelectedLine] = useState<string>();
 
   const stage = useRef<Konva.Stage>(null);
   const isDrawing = useRef(false);
@@ -168,34 +169,6 @@ function useEventListeners() {
     setDragging(false);
   };
 
-  // const handleDragEnd = (e: KonvaMouseEvent) => {
-  //   const line = e.target;
-  //   console.log("Drag End Evt:", e, { id: line.id() });
-  //   e.evt.preventDefault();
-
-  //   const position = line.position();
-  //   const points = line.attrs.points;
-  //   console.log("Point attrs:", points);
-  //   console.log("position:", position);
-
-  //   const newPoints = points.map((point: number, index: number) => {
-  //     if (index % 2 === 0) {
-  //       console.log("returning:", point + position.x);
-  //       return point + position.x;
-  //     }
-  //     return point + position.y;
-  //   });
-  //   console.log("Points After:", newPoints);
-
-  //   logStage(e);
-
-  //   setLines((curLines) => {
-  //     const cur = JSON.parse(JSON.stringify(curLines));
-  //     return [...curLines];
-  //   });
-  //   setDragging(false);
-  // };
-
   function logStage(e?: KonvaMouseEvent) {
     if (stage.current) {
       console.log("Stage:", {
@@ -209,50 +182,12 @@ function useEventListeners() {
     }
   }
 
-  // const handleDragEnd = (e: KonvaMouseEvent) => {
-  //   const line = e.target;
-  //   console.log("Drag End Evt:", e, { id: line.id() });
-  //   e.evt.preventDefault();
-
-  //   const position = line.position();
-  //   const points = line.attrs.points;
-
-  //   const newPoints = points.map((point: number, index: number) => {
-  //     if (index % 2 === 0) {
-  //       console.log("returning:", point + position.x);
-  //       return point + position.x;
-  //     }
-  //     return point + position.y;
-  //   });
-  //   console.log("Points After:", newPoints);
-
-  //   const id = line.id();
-  //   const storedLineIndex = lines.findIndex((l) => l.id === id);
-  //   if (storedLineIndex === -1) {
-  //     console.log("LINE NOT FOUND", id);
-  //     return;
-  //   }
-  //   const linesCopy = [...lines];
-  //   const lineToUpdate = { ...linesCopy[storedLineIndex] };
-  //   lineToUpdate.points = (lineToUpdate.points?.slice(0, 2) as number[]).concat(
-  //     newPoints.slice(-2)
-  //   );
-  //   // linesCopy[storedLineIndex] = {
-  //   //   ...linesCopy[storedLineIndex],
-  //   //   points: newPoints,
-  //   // };
-  //   linesCopy[storedLineIndex] = lineToUpdate;
-
-  //   setLines(linesCopy);
-  //   // setLines([{ points }]);
-  //   setDragging(false);
-  // };
-
   function handleClickLine(e: KonvaMouseEvent) {
     console.log("CLICKED LINE - E.TARGET:", {
       target: e.target,
       currentTarget: e.currentTarget,
     });
+    setSelectedLine(e.target.id());
   }
 
   const actionState = {
@@ -273,6 +208,7 @@ function useEventListeners() {
     lines,
     stageListenersActive,
     actionState,
+    selectedLine,
     setStageListenersActive,
     setStage,
   };
