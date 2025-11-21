@@ -1,10 +1,13 @@
 "use client";
 import { useRef, useState } from "react";
-import type { LineConfig } from "konva/lib/shapes/Line";
-import type { Vector2d } from "konva/lib/types";
 import Konva from "konva";
+import type { LineConfig as KonvaLineConfig } from "konva/lib/shapes/Line";
+import type { Vector2d } from "konva/lib/types";
 
 type KonvaMouseEvent = Konva.KonvaEventObject<MouseEvent>;
+interface LineConfig extends Omit<KonvaLineConfig, "points"> {
+  points?: number[];
+}
 
 function useEventListeners() {
   const [stageListenersActive, setStageListenersActive] = useState(true);
@@ -31,7 +34,7 @@ function useEventListeners() {
     return pos;
   }
 
-  function getLinesClone() {
+  function getLinesClone(): LineConfig[] {
     return JSON.parse(JSON.stringify(lines));
   }
 
@@ -193,6 +196,34 @@ function useEventListeners() {
     });
     const points = e.target.attrs.points;
     setSelectedLine({ id: e.target.id(), x: points[0], y: points[1] });
+  }
+
+  function rotateLineVertical() {
+    if (!selectedLine) {
+      console.log("NO LINE SELECTED");
+      return;
+    }
+
+    const lines = getLinesClone();
+    const lineIndex = lines.findIndex((l) => l.id === selectedLine.id);
+
+    if (lineIndex === -1) {
+      console.log("LINE NOT FOUND");
+      return;
+    }
+
+    const points = lines[lineIndex].points;
+    if (!points || points.length != 4) {
+      console.log("Invalid # of points:", points);
+      return;
+    }
+
+    const halfWay = (points[0] + points[2]) / 2;
+    points[0] = halfWay;
+    points[2] = halfWay;
+
+    lines[lineIndex].points = points;
+    setLines(lines);
   }
 
   const actionState = {

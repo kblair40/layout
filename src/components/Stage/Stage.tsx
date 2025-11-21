@@ -15,6 +15,7 @@ import Konva from "konva";
 import type { LineConfig } from "konva/lib/shapes/Line";
 import { Portal, Html } from "react-konva-utils";
 
+import { Button } from "../ui/button";
 import useEventListeners from "@/hooks/useEventListeners";
 
 const DEFAULT_LINE: Partial<LineConfig> = {
@@ -68,6 +69,16 @@ const Stage = () => {
     setStageListenersActive,
     setStage,
   } = useEventListeners();
+
+  function handleClickRotateVertical() {
+    // 
+    console.log('Rotate vertical')
+  }
+
+  function handleClickRotateHorizontal() {
+    // 
+    console.log('Rotate horizontal')
+  }
 
   return (
     <div>
@@ -171,9 +182,14 @@ const Stage = () => {
                     top: selectedLine.y - 80,
                     left: selectedLine.x - 80,
                   }}
-                  className="absolute w-40 h-20 border"
+                  className="absolute w-40 h-20 border px-1 flex flex-col justify-evenly"
                 >
-                  
+                  <Button size="sm" className="w-full" onClick={handleClickRotateVertical}>
+                    Rotate Vertical
+                  </Button>
+                  <Button size="sm" className="w-full" onClick={handleClickRotateHorizontal}>
+                    Rotate Horizontal
+                  </Button>
                 </div>
               </Html>
             )}
