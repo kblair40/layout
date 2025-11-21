@@ -198,10 +198,10 @@ function useEventListeners() {
     setSelectedLine({ id: e.target.id(), x: points[0], y: points[1] });
   }
 
-  function rotateLineVertical() {
+  function validateLineSelection() {
     if (!selectedLine) {
       console.log("NO LINE SELECTED");
-      return;
+      return null;
     }
 
     const lines = getLinesClone();
@@ -209,21 +209,56 @@ function useEventListeners() {
 
     if (lineIndex === -1) {
       console.log("LINE NOT FOUND");
-      return;
+      return null;
     }
 
     const points = lines[lineIndex].points;
     if (!points || points.length != 4) {
       console.log("Invalid # of points:", points);
+      return null;
+    }
+
+    return { clonedLines: lines, lineIndex, points };
+  }
+
+  function getLineLength(p: number[]) {
+    return Math.sqrt((p[2] -= p[0]) * p[2] + (p[3] -= p[1]) * p[3]);
+  }
+
+  function rotateLineVertical() {
+    const { clonedLines, lineIndex, points } = validateLineSelection() || {};
+
+    if (!clonedLines || !points || typeof lineIndex !== "number") {
+      console.log("Validation failed");
       return;
     }
 
+    console.log("Points before:", [...points]);
+    const length = getLineLength([...points]);
+    console.log("Length before:", getLineLength([...points]));
     const halfWay = (points[0] + points[2]) / 2;
     points[0] = halfWay;
     points[2] = halfWay;
+    clonedLines[lineIndex].points = points;
+    console.log("Points after:", [...points]);
+    console.log("Length after:", getLineLength([...points]));
+    setLines(clonedLines);
+  }
 
-    lines[lineIndex].points = points;
-    setLines(lines);
+  function rotateLineHorizontal() {
+    const { clonedLines, lineIndex, points } = validateLineSelection() || {};
+
+    if (!clonedLines || !points || typeof lineIndex !== "number") {
+      console.log("Validation failed");
+      return;
+    }
+
+    const halfWay = (points[1] + points[3]) / 2;
+    points[1] = halfWay;
+    points[3] = halfWay;
+
+    clonedLines[lineIndex].points = points;
+    setLines(clonedLines);
   }
 
   const actionState = {
@@ -247,6 +282,8 @@ function useEventListeners() {
     selectedLine,
     setStageListenersActive,
     setStage,
+    rotateLineVertical,
+    rotateLineHorizontal,
   };
 }
 

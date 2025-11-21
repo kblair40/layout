@@ -68,16 +68,20 @@ const Stage = () => {
     selectedLine,
     setStageListenersActive,
     setStage,
+    rotateLineVertical,
+    rotateLineHorizontal,
   } = useEventListeners();
 
   function handleClickRotateVertical() {
-    // 
-    console.log('Rotate vertical')
+    //
+    console.log("Rotate vertical");
+    rotateLineVertical();
   }
 
   function handleClickRotateHorizontal() {
-    // 
-    console.log('Rotate horizontal')
+    //
+    console.log("Rotate horizontal");
+    rotateLineHorizontal();
   }
 
   return (
@@ -184,10 +188,18 @@ const Stage = () => {
                   }}
                   className="absolute w-40 h-20 border px-1 flex flex-col justify-evenly"
                 >
-                  <Button size="sm" className="w-full" onClick={handleClickRotateVertical}>
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    onClick={handleClickRotateVertical}
+                  >
                     Rotate Vertical
                   </Button>
-                  <Button size="sm" className="w-full" onClick={handleClickRotateHorizontal}>
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    onClick={handleClickRotateHorizontal}
+                  >
                     Rotate Horizontal
                   </Button>
                 </div>
