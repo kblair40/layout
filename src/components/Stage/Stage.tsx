@@ -139,7 +139,7 @@ const Stage = () => {
               </>
             )} */}
 
-            {selectedLine && (
+            {/* {selectedLine && (
               // Subtract 50% of width and 100% of height
               <Group x={selectedLine.x - 100} y={selectedLine.y - 100}>
                 <Rect
@@ -161,18 +161,19 @@ const Stage = () => {
                   height={25}
                 />
               </Group>
-            )}
+            )} */}
 
             {selectedLine && (
               <Html>
                 <div
                   style={{
-                    position: "absolute",
-                    top: selectedLine.y,
-                    left: selectedLine.x,
+                    // position: "absolute",
+                    top: selectedLine.y - 80,
+                    left: selectedLine.x - 80,
                   }}
+                  className="absolute w-40 h-20 border"
                 >
-                  TEST
+                  
                 </div>
               </Html>
             )}
