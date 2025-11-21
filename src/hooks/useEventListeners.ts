@@ -232,16 +232,29 @@ function useEventListeners() {
       console.log("Validation failed");
       return;
     }
-
+    console.group("Rotate Vertical");
     console.log("Points before:", [...points]);
-    const length = getLineLength([...points]);
-    console.log("Length before:", getLineLength([...points]));
-    const halfWay = (points[0] + points[2]) / 2;
-    points[0] = halfWay;
-    points[2] = halfWay;
+    const lengthBefore = getLineLength([...points]);
+    console.log("Length before:", lengthBefore);
+    const half = (points[0] + points[2]) / 2;
+    points[0] = half;
+    points[2] = half;
+    console.log("Points after x update:", [...points]);
+
+    const lengthAfter = getLineLength([...points]);
+    const lengthChange = lengthBefore - lengthAfter;
+    console.log("Length after x update:", { lengthAfter, lengthChange });
+
+    if (points[1] > points[3]) {
+      points[1] += lengthChange;
+    } else {
+      points[3] += lengthChange;
+    }
+
+    console.log("Points after y update:", [...points]);
+    console.log("Length after y update:", getLineLength([...points]));
+    console.groupEnd();
     clonedLines[lineIndex].points = points;
-    console.log("Points after:", [...points]);
-    console.log("Length after:", getLineLength([...points]));
     setLines(clonedLines);
   }
 
@@ -252,12 +265,32 @@ function useEventListeners() {
       console.log("Validation failed");
       return;
     }
+    console.group("Rotate Horizontal");
 
-    const halfWay = (points[1] + points[3]) / 2;
-    points[1] = halfWay;
-    points[3] = halfWay;
+    console.log("Points before:", [...points]);
+    const lengthBefore = getLineLength([...points]);
+    console.log("Length before:", lengthBefore);
+
+    const half = (points[1] + points[3]) / 2;
+    points[1] = half;
+    points[3] = half;
+    console.log("Points after y update:", [...points]);
+    console.log("Length after y update:", getLineLength([...points]));
+
+    const lengthAfter = getLineLength([...points]);
+    const lengthChange = lengthBefore - lengthAfter;
+    console.log("Length after x update:", { lengthAfter, lengthChange });
+
+    if (points[0] > points[2]) {
+      points[0] += lengthChange;
+    } else {
+      points[2] += lengthChange;
+    }
+    console.log("Points after x update:", [...points]);
+    console.log("Length after x update:", getLineLength([...points]));
 
     clonedLines[lineIndex].points = points;
+    console.groupEnd();
     setLines(clonedLines);
   }
 
