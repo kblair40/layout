@@ -294,6 +294,10 @@ function useEventListeners() {
     setLines(clonedLines);
   }
 
+  function handleContextMenu(e: KonvaMouseEvent) {
+    console.log("ctx menu target:", e.target);
+  }
+
   const actionState = {
     isDragging: dragging,
   };
@@ -305,6 +309,7 @@ function useEventListeners() {
     handleDragStartLine: handleDragStart,
     handleDragEndLine: handleDragEnd,
     handleClickLine,
+    handleContextMenu,
   };
 
   return {

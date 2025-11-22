@@ -122,6 +122,7 @@ const Stage = () => {
                   setStageListenersActive(true);
                 }}
                 onClick={listeners.handleClickLine}
+                onContextMenu={listeners.handleContextMenu}
                 stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
               />
             );
