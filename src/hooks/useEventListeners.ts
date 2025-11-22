@@ -9,6 +9,8 @@ interface LineConfig extends Omit<KonvaLineConfig, "points"> {
   points?: number[];
 }
 
+type Coordinate = { x: number; y: number };
+
 function useEventListeners() {
   const [stageListenersActive, setStageListenersActive] = useState(true);
   const [lines, setLines] = useState<LineConfig[]>([]);
@@ -18,6 +20,7 @@ function useEventListeners() {
     x: number;
     y: number;
   }>();
+  const [menuPosition, setMenuPosition] = useState<Coordinate>();
 
   const stage = useRef<Konva.Stage>(null);
   const isDrawing = useRef(false);
@@ -49,7 +52,9 @@ function useEventListeners() {
   }
 
   const handleMouseDown = (e: KonvaMouseEvent) => {
+    if (!stageListenersActive) return;
     console.log("MOUSE DOWN");
+    closeContextMenu();
     isDrawing.current = true;
     const pos = getMousePosition(e);
     console.log("MOUSE POSITION:", pos);
@@ -60,6 +65,7 @@ function useEventListeners() {
   };
 
   const handleMouseMove = (e: KonvaMouseEvent) => {
+    if (!stageListenersActive) return;
     // no drawing - skipping
     if (!isDrawing.current) return;
 
@@ -82,6 +88,7 @@ function useEventListeners() {
   };
 
   const handleMouseUp = (e: KonvaMouseEvent) => {
+    if (!stageListenersActive) return;
     if (e.target.getType() !== "Stage") {
       console.log("Not on stage. No Mouse Up Event");
       return;
@@ -295,7 +302,17 @@ function useEventListeners() {
   }
 
   function handleContextMenu(e: KonvaMouseEvent) {
-    console.log("ctx menu target:", e.target);
+    e.evt.preventDefault();
+    const line = e.target;
+    const position = getMousePosition(e);
+    console.log("handleContextMenu:", { line, position });
+    setMenuPosition({ x: position.x, y: position.y });
+    setSelectedLine({ id: line.id(), x: line.x(), y: line.y() });
+  }
+
+  function closeContextMenu() {
+    setMenuPosition(undefined);
+    setSelectedLine(undefined);
   }
 
   const actionState = {
@@ -318,10 +335,12 @@ function useEventListeners() {
     stageListenersActive,
     actionState,
     selectedLine,
+    menuPosition,
     setStageListenersActive,
     setStage,
     rotateLineVertical,
     rotateLineHorizontal,
+    closeContextMenu,
   };
 }
 

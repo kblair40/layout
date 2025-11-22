@@ -66,22 +66,20 @@ const Stage = () => {
     actionState,
     stageListenersActive,
     selectedLine,
+    menuPosition,
     setStageListenersActive,
     setStage,
     rotateLineVertical,
     rotateLineHorizontal,
+    closeContextMenu,
   } = useEventListeners();
 
-  function handleClickRotateVertical() {
-    //
-    console.log("Rotate vertical");
-    rotateLineVertical();
-  }
+  function handleClickRotate(dir: "horizontal" | "vertical") {
+    console.log("Rotate", dir);
+    if (dir === "horizontal") rotateLineHorizontal();
+    else rotateLineVertical();
 
-  function handleClickRotateHorizontal() {
-    //
-    console.log("Rotate horizontal");
-    rotateLineHorizontal();
+    closeContextMenu();
   }
 
   return (
@@ -89,15 +87,9 @@ const Stage = () => {
       <Canvas
         ref={canvas}
         className="border"
-        onMouseDown={
-          stageListenersActive ? listeners.handleMouseDownOnStage : undefined
-        }
-        onMouseMove={
-          stageListenersActive ? listeners.handleMouseMoveOnStage : undefined
-        }
-        onMouseup={
-          stageListenersActive ? listeners.handleMouseUpOnStage : undefined
-        }
+        onMouseDown={listeners.handleMouseDownOnStage}
+        onMouseMove={listeners.handleMouseMoveOnStage}
+        onMouseup={listeners.handleMouseUpOnStage}
         width={window?.innerWidth || 0}
         height={window?.innerHeight - 100 || 0}
       >
@@ -121,7 +113,8 @@ const Stage = () => {
                   document.body.style.cursor = "default";
                   setStageListenersActive(true);
                 }}
-                onClick={listeners.handleClickLine}
+                // onClick={e => e.stopPropagation()}
+                // onClick={listeners.handleClickLine}
                 onContextMenu={listeners.handleContextMenu}
                 stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
               />
@@ -179,27 +172,28 @@ const Stage = () => {
               </Group>
             )} */}
 
-            {selectedLine && (
+            {selectedLine && menuPosition && (
               <Html>
                 <div
                   style={{
-                    // position: "absolute",
-                    top: selectedLine.y - 80,
-                    left: selectedLine.x - 80,
+                    top: menuPosition.y,
+                    left: menuPosition.x,
+                    // top: selectedLine.y - 80,
+                    // left: selectedLine.x - 80,
                   }}
                   className="absolute w-40 h-20 border px-1 flex flex-col justify-evenly"
                 >
                   <Button
                     size="sm"
                     className="w-full"
-                    onClick={handleClickRotateVertical}
+                    onClick={() => handleClickRotate("vertical")}
                   >
                     Rotate Vertical
                   </Button>
                   <Button
                     size="sm"
                     className="w-full"
-                    onClick={handleClickRotateHorizontal}
+                    onClick={() => handleClickRotate("horizontal")}
                   >
                     Rotate Horizontal
                   </Button>
