@@ -53,8 +53,9 @@ function useEventListeners() {
   }
 
   const handleMouseDown = (e: KonvaMouseEvent) => {
-    if (!stageListenersActive) return;
-    console.log("MOUSE DOWN");
+    // button === 0 === left click.  button === 2 === right click
+    if (!stageListenersActive || e.evt.button === 2) return;
+    console.log("MOUSE DOWN", { evt: e.evt.button, dd: e.target.dragDistance });
 
     if (!isDrawing) {
       console.log("");
@@ -313,7 +314,8 @@ function useEventListeners() {
   }
 
   function handleContextMenu(e: KonvaMouseEvent) {
-    e.evt.preventDefault();
+    e.evt.preventDefault(); // Prevents the browser's default context menu from appearing
+    e.evt.stopPropagation();
     const line = e.target;
     const position = getMousePosition(e);
     console.log("handleContextMenu:", { line, position });

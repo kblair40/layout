@@ -112,7 +112,17 @@ const Stage = () => {
                 onMouseLeave={(e) => {
                   document.body.style.cursor = "default";
                 }}
-                onContextMenu={listeners.handleContextMenu}
+                onContextMenu={(e) => {
+                  console.log("Ctx menu");
+                  e.evt.stopPropagation();
+                  e.evt.preventDefault();
+                  listeners.handleContextMenu(e);
+                }}
+                onMouseDown={(e) => {
+                  console.log("Stopping mousedown:", e);
+                  e.evt.stopPropagation();
+                  e.evt.preventDefault();
+                }}
                 stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
               />
             );
@@ -121,29 +131,6 @@ const Stage = () => {
           <Portal selector=".top">
             {/* content of that portal will be moved into "top" group*/}
             {/* <Rect width={100} height={100} fill="red" draggable /> */}
-
-            {/* {selectedLine && (
-              <>
-                <Rect
-                  stroke="#010c0d"
-                  fill="#f8f8f8"
-                  strokeWidth={2}
-                  width={200}
-                  height={100}
-                  // Subtract 50% of width and 100% of height
-                  x={selectedLine.x - 50}
-                  y={selectedLine.y - 100}
-                ></Rect>
-                <Circle
-                  x={selectedLine.x - 20}
-                  y={selectedLine.y - 50}
-                  stroke="#000"
-                  strokeWidth={2}
-                  width={25}
-                  height={25}
-                />
-              </>
-            )} */}
 
             {/* {selectedLine && (
               // Subtract 50% of width and 100% of height
