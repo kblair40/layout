@@ -67,6 +67,7 @@ const Stage = () => {
     stageListenersActive,
     selectedLine,
     menuPosition,
+    isDrawing,
     setStageListenersActive,
     setStage,
     rotateLineVertical,
@@ -107,14 +108,10 @@ const Stage = () => {
                 onDragEnd={listeners.handleDragEndLine}
                 onMouseEnter={(e) => {
                   document.body.style.cursor = "pointer";
-                  setStageListenersActive(false);
                 }}
                 onMouseLeave={(e) => {
                   document.body.style.cursor = "default";
-                  setStageListenersActive(true);
                 }}
-                // onClick={e => e.stopPropagation()}
-                // onClick={listeners.handleClickLine}
                 onContextMenu={listeners.handleContextMenu}
                 stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
               />
@@ -206,16 +203,22 @@ const Stage = () => {
       </Canvas>
 
       <div className="h-[100px] flex items-center gap-x-4 px-4 relative">
-        <button
-          className="border px-2 py-1 flex justify-center items-center rounded-sm bg-white transition-colors hover:bg-neutral-100 duration-150 cursor-pointer active:bg-neutral-200"
-          onClick={() => setStageListenersActive((cur) => !cur)}
-        >
-          {stageListenersActive ? "disable" : "enable"} stage listeners
-        </button>
+        <div className="flex flex-col gap-y-1 pl-12">
+          <button
+            className="border text-sm px-2 py-1 flex justify-center items-center rounded-sm bg-white transition-colors hover:bg-neutral-100 duration-150 cursor-pointer active:bg-neutral-200"
+            onClick={() => setStageListenersActive((cur) => !cur)}
+          >
+            {stageListenersActive ? "disable" : "enable"} stage listeners
+          </button>
+          <div className="text-sm leading-tight font-medium">
+            <p>Drawing: {String(isDrawing)}</p>
+            <p>Dragging: {String(actionState.isDragging)}</p>
+          </div>
+        </div>
 
-        <div># of Lines = {lines.length}</div>
+        <div className="flex flex-col gap-y-1">
+          <div># of Lines = {lines.length}</div>
 
-        <div className="pl-4">
           <button
             className="border px-2 py-1 flex justify-center items-center rounded-sm bg-white transition-colors hover:bg-neutral-100 duration-150 cursor-pointer active:bg-neutral-200"
             onClick={listLines}

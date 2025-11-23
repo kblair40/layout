@@ -21,9 +21,10 @@ function useEventListeners() {
     y: number;
   }>();
   const [menuPosition, setMenuPosition] = useState<Coordinate>();
+  const [isDrawing, setIsDrawing] = useState(false);
 
   const stage = useRef<Konva.Stage>(null);
-  const isDrawing = useRef(false);
+  // const isDrawing = useRef(false);
   const mouseStart = useRef<Vector2d>(null);
 
   function setStage(_stage: Konva.Stage) {
@@ -54,8 +55,16 @@ function useEventListeners() {
   const handleMouseDown = (e: KonvaMouseEvent) => {
     if (!stageListenersActive) return;
     console.log("MOUSE DOWN");
+
+    if (!isDrawing) {
+      console.log("");
+      removeInvalidLines();
+    }
+    // if (isDrawing.current) removeInvalidLines();
+
     closeContextMenu();
-    isDrawing.current = true;
+    // isDrawing.current = true;
+    setIsDrawing(true);
     const pos = getMousePosition(e);
     console.log("MOUSE POSITION:", pos);
     mouseStart.current = pos;
@@ -67,7 +76,8 @@ function useEventListeners() {
   const handleMouseMove = (e: KonvaMouseEvent) => {
     if (!stageListenersActive) return;
     // no drawing - skipping
-    if (!isDrawing.current) return;
+    // if (!isDrawing.current) return;
+    if (!isDrawing) return;
 
     const point = getMousePosition(e);
     const lastLine = getLastLine();
@@ -78,10 +88,10 @@ function useEventListeners() {
       .concat([point.x, point.y]);
 
     setLines((cur) => {
-      console.log("MOVE: length before:", [...cur].length);
+      // console.log("MOVE: length before:", [...cur].length);
       cur = cur.slice(0, cur.length - 1);
-      console.log("Length after:", [...cur].length);
-      console.log("pushing:", lastLine);
+      // console.log("Length after:", [...cur].length);
+      // console.log("pushing:", lastLine);
       cur.push(lastLine);
       return [...cur];
     });
@@ -89,12 +99,15 @@ function useEventListeners() {
 
   const handleMouseUp = (e: KonvaMouseEvent) => {
     if (!stageListenersActive) return;
-    if (e.target.getType() !== "Stage") {
-      console.log("Not on stage. No Mouse Up Event");
-      return;
-    }
-    console.log("MOUSE UP");
-    isDrawing.current = false;
+    setIsDrawing(false);
+    console.log("Mouse Up On:", e.target.getType());
+    // if (e.target.getType() !== "Stage") {
+    //   console.log("Not on stage. No Mouse Up Event");
+    //   removeInvalidLines();
+    //   return;
+    // }
+    console.log("MOUSE UP LISTENER");
+    // isDrawing.current = false;
 
     const stage = e.target.getStage();
     if (!stage) {
@@ -197,12 +210,10 @@ function useEventListeners() {
   }
 
   function handleClickLine(e: KonvaMouseEvent) {
-    console.log("CLICKED LINE - E.TARGET:", {
-      target: e.target,
-      currentTarget: e.currentTarget,
-    });
-    const points = e.target.attrs.points;
-    setSelectedLine({ id: e.target.id(), x: points[0], y: points[1] });
+    console.log("CLICKED LINE - E.TARGET:", e.target);
+    if (isDrawing) removeInvalidLines();
+    // const points = e.target.attrs.points;
+    // setSelectedLine({ id: e.target.id(), x: points[0], y: points[1] });
   }
 
   function validateLineSelection() {
@@ -315,6 +326,14 @@ function useEventListeners() {
     setSelectedLine(undefined);
   }
 
+  function removeInvalidLines() {
+    console.log("REMOVING INVALID LINES");
+    // removes lines that don't have exactly 4 points;
+    setLines((lines) => lines.filter((l) => l.points?.length === 4));
+    // isDrawing.current = false;
+    setIsDrawing(false);
+  }
+
   const actionState = {
     isDragging: dragging,
   };
@@ -336,6 +355,7 @@ function useEventListeners() {
     actionState,
     selectedLine,
     menuPosition,
+    isDrawing,
     setStageListenersActive,
     setStage,
     rotateLineVertical,
