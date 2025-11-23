@@ -113,15 +113,8 @@ const Stage = () => {
                   document.body.style.cursor = "default";
                 }}
                 onContextMenu={(e) => {
-                  console.log("Ctx menu");
-                  e.evt.stopPropagation();
                   e.evt.preventDefault();
                   listeners.handleContextMenu(e);
-                }}
-                onMouseDown={(e) => {
-                  console.log("Stopping mousedown:", e);
-                  e.evt.stopPropagation();
-                  e.evt.preventDefault();
                 }}
                 stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
               />
