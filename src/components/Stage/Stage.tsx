@@ -17,6 +17,7 @@ import { Portal, Html } from "react-konva-utils";
 
 import { Button } from "../ui/button";
 import useEventListeners from "@/hooks/useEventListeners";
+import useObjectSnap from "@/hooks/useObjectSnap";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_LINE: Partial<LineConfig> = {
@@ -58,7 +59,10 @@ const Stage = () => {
   }
 
   useEffect(() => {
-    if (canvas.current) setStage(canvas.current);
+    if (canvas.current) {
+      setStage(canvas.current);
+      setSnapStage(canvas.current);
+    }
   }, []);
 
   const {
@@ -75,6 +79,8 @@ const Stage = () => {
     closeContextMenu,
     deleteLine,
   } = useEventListeners();
+
+  const { setStage: setSnapStage } = useObjectSnap(lines);
 
   function handleClickRotate(dir: "horizontal" | "vertical") {
     console.log("Rotate", dir);
