@@ -4,12 +4,13 @@ import Konva from "konva";
 import type { LineConfig as KonvaLineConfig } from "konva/lib/shapes/Line";
 import type { Vector2d } from "konva/lib/types";
 
-type KonvaMouseEvent = Konva.KonvaEventObject<MouseEvent>;
-interface LineConfig extends Omit<KonvaLineConfig, "points"> {
+import { getLineLength, getMousePosition } from "@/lib/event-listener-utils";
+import type { KonvaMouseEvent } from "@/lib/event-listener-utils";
+
+export interface LineConfig extends Omit<KonvaLineConfig, "points"> {
   points?: number[];
 }
-
-type Coordinate = { x: number; y: number };
+export type Coordinate = { x: number; y: number };
 
 function useEventListeners() {
   const [stageListenersActive, setStageListenersActive] = useState(true);
@@ -25,7 +26,6 @@ function useEventListeners() {
   const [shiftKeyPressed, setShiftKeyPressed] = useState(false);
 
   const stage = useRef<Konva.Stage>(null);
-  // const isDrawing = useRef(false);
   const mouseStart = useRef<Vector2d>(null);
 
   useEffect(() => {
@@ -50,13 +50,6 @@ function useEventListeners() {
 
   function setStage(_stage: Konva.Stage) {
     stage.current = _stage;
-  }
-
-  function getMousePosition(e: KonvaMouseEvent): Vector2d {
-    const pos = e.target.getStage()?.getPointerPosition();
-    if (!pos) throw new Error("STAGE NOT PRESENT");
-
-    return pos;
   }
 
   function getLinesClone(): LineConfig[] {
@@ -239,8 +232,6 @@ function useEventListeners() {
   function handleClickLine(e: KonvaMouseEvent) {
     console.log("CLICKED LINE - E.TARGET:", e.target);
     if (isDrawing) removeInvalidLines();
-    // const points = e.target.attrs.points;
-    // setSelectedLine({ id: e.target.id(), x: points[0], y: points[1] });
   }
 
   function validateLineSelection() {
@@ -266,10 +257,6 @@ function useEventListeners() {
     return { clonedLines: lines, lineIndex, points };
   }
 
-  function getLineLength(p: number[]) {
-    return Math.sqrt((p[2] -= p[0]) * p[2] + (p[3] -= p[1]) * p[3]);
-  }
-
   function rotateLineVertical() {
     const { clonedLines, lineIndex, points } = validateLineSelection() || {};
 
@@ -277,7 +264,7 @@ function useEventListeners() {
       console.log("Validation failed");
       return;
     }
-    
+
     console.group("Rotate Vertical");
     console.log("Points before:", [...points]);
     const lengthBefore = getLineLength([...points]);
