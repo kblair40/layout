@@ -32,6 +32,7 @@ function useEventListeners() {
     function handleKeyDown(e: KeyboardEvent) {
       console.log("KEYDOWN:", e.key);
       if (e.key === "Shift") setShiftKeyPressed(true);
+      else if (e.key === "Escape") closeContextMenu();
     }
 
     function handleKeyUp(e: KeyboardEvent) {
