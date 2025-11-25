@@ -21,7 +21,7 @@ import useEventListeners from "@/hooks/useEventListeners";
 const DEFAULT_LINE: Partial<LineConfig> = {
   strokeWidth: 3,
   stroke: "black",
-  draggable: true,
+  // draggable: true,
 };
 
 const Stage = () => {
@@ -68,6 +68,7 @@ const Stage = () => {
     selectedLine,
     menuPosition,
     isDrawing,
+    shiftKeyPressed,
     setStageListenersActive,
     setStage,
     rotateLineVertical,
@@ -117,6 +118,7 @@ const Stage = () => {
                   listeners.handleContextMenu(e);
                 }}
                 stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
+                draggable={!shiftKeyPressed}
               />
             );
           })}
@@ -193,6 +195,7 @@ const Stage = () => {
           <div className="text-sm leading-tight font-medium">
             <p>Drawing: {String(isDrawing)}</p>
             <p>Dragging: {String(actionState.isDragging)}</p>
+            <p>shiftKeyPressed: {String(shiftKeyPressed)}</p>
           </div>
         </div>
 

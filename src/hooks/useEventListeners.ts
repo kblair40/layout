@@ -30,17 +30,13 @@ function useEventListeners() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      console.log("KEYDOWN:", e.key);
-      if (e.key === "Shift") {
-        setShiftKeyPressed(true);
-      }
+      // console.log("KEYDOWN:", e.key);
+      if (e.key === "Shift") setShiftKeyPressed(true);
     }
 
     function handleKeyUp(e: KeyboardEvent) {
-      console.log("KEY:", e.key);
-      if (shiftKeyPressed) {
-        setShiftKeyPressed(false);
-      }
+      // console.log("KEYUP:", e.key);
+      if (e.key === "Shift") setShiftKeyPressed(false);
     }
 
     window.addEventListener("keydown", handleKeyDown);
@@ -388,6 +384,7 @@ function useEventListeners() {
     selectedLine,
     menuPosition,
     isDrawing,
+    shiftKeyPressed,
     setStageListenersActive,
     setStage,
     rotateLineVertical,
