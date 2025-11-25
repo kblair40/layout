@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef } from "react";
 import Konva from "konva";
 import type { Node, NodeConfig } from "konva/lib/Node";
 
@@ -8,22 +8,16 @@ import type { KonvaMouseEvent } from "@/lib/event-listener-utils";
 const GUIDELINE_OFFSET = 5;
 
 function useObjectSnap(lines: LineConfig[]) {
-  const stage = useRef<Konva.Stage>(null);
   const layer = useRef<Konva.Layer>(null);
-
-  const setStage = (_stage: Konva.Stage) => {
-    stage.current = _stage;
-
-    layer.current = _stage.getLayer();
+  
+  const setLayer = (_layer: Konva.Layer) => {
+    layer.current = _layer;
   };
-
-  function getStage(): Konva.Stage | null {
-    return stage.current;
-  }
 
   // were can we snap our objects?
   function getLineGuideStops(skipShape?: Node<NodeConfig>) {
-    const stage = getStage();
+    // const stage = getStage();
+    const stage = layer.current?.getStage();
     if (!stage) return;
     const [w, h] = [stage.width(), stage.height()];
     // we can snap to stage borders and the center of the stage
@@ -207,7 +201,7 @@ function useObjectSnap(lines: LineConfig[]) {
   }
 
   function handleDragMove(e: KonvaMouseEvent) {
-    console.log('LAYER DRAG MOVE')
+    console.log("LAYER DRAG MOVE");
     if (!layer.current) return;
     layer.current.find("guide-line").forEach((l) => l.destroy());
 
@@ -248,13 +242,14 @@ function useObjectSnap(lines: LineConfig[]) {
   }
 
   function handleDragEnd() {
-    console.log('LAYER DRAG END')
+    console.log("LAYER DRAG END");
     // clear all previous lines on the screen
     layer.current?.find(".guide-line").forEach((l) => l.destroy());
   }
 
   return {
-    setStage,
+    // setStage,
+    setLayer,
     handleDragMove,
     handleDragEnd,
   };

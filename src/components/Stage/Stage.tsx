@@ -1,29 +1,20 @@
 "use client";
 
-import "client-only";
-import React, { useState, useRef, useEffect } from "react";
-import {
-  Stage as Canvas,
-  Layer,
-  Rect,
-  Text,
-  Circle,
-  Line,
-  Group,
-} from "react-konva";
+import React, { useRef, useEffect } from "react";
+import { Stage as Canvas, Line, Group, Rect } from "react-konva";
 import Konva from "konva";
 import type { LineConfig } from "konva/lib/shapes/Line";
 import { Portal, Html } from "react-konva-utils";
 
 import { Button } from "../ui/button";
+import Layer from "../Layer/Layer";
 import useEventListeners from "@/hooks/useEventListeners";
-import useObjectSnap from "@/hooks/useObjectSnap";
+// import useObjectSnap from "@/hooks/useObjectSnap";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_LINE: Partial<LineConfig> = {
   strokeWidth: 3,
   stroke: "black",
-  // draggable: true,
 };
 
 const Stage = () => {
@@ -61,7 +52,7 @@ const Stage = () => {
   useEffect(() => {
     if (canvas.current) {
       setStage(canvas.current);
-      setSnapStage(canvas.current);
+      // setSnapStage(canvas.current);
     }
   }, []);
 
@@ -80,11 +71,11 @@ const Stage = () => {
     deleteLine,
   } = useEventListeners();
 
-  const {
-    setStage: setSnapStage,
-    handleDragMove,
-    handleDragEnd,
-  } = useObjectSnap(lines);
+  // const {
+  //   setStage: setSnapStage,
+  //   handleDragMove,
+  //   handleDragEnd,
+  // } = useObjectSnap(lines);
 
   function handleClickRotate(dir: "horizontal" | "vertical") {
     console.log("Rotate", dir);
@@ -110,9 +101,9 @@ const Stage = () => {
         height={window?.innerHeight - 100 || 0}
       >
         <Layer
-          ref={layer}
-          onDragMove={handleDragMove}
-          onDragEnd={handleDragEnd}
+        // ref={layer}
+        // onDragMove={handleDragMove}
+        // onDragEnd={handleDragEnd}
         >
           {lines.map((line, i) => {
             return (
