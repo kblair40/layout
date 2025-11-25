@@ -9,7 +9,7 @@ const GUIDELINE_OFFSET = 5;
 
 function useObjectSnap(lines: LineConfig[]) {
   const layer = useRef<Konva.Layer>(null);
-  
+
   const setLayer = (_layer: Konva.Layer) => {
     layer.current = _layer;
   };
@@ -238,6 +238,7 @@ function useObjectSnap(lines: LineConfig[]) {
         }
       }
     });
+
     e.target.absolutePosition(absPos);
   }
 
@@ -248,7 +249,6 @@ function useObjectSnap(lines: LineConfig[]) {
   }
 
   return {
-    // setStage,
     setLayer,
     handleDragMove,
     handleDragEnd,
