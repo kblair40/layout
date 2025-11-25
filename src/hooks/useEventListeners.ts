@@ -327,6 +327,24 @@ function useEventListeners() {
     setLines(clonedLines);
   }
 
+  function deleteLine(id?: string) {
+    console.log("Delete Line:", { id, selectedLineId: selectedLine?.id });
+    if (!id && !selectedLine?.id) return;
+
+    const lines = getLinesClone();
+
+    const lineIdx = id
+      ? lines.findIndex((l) => l.id === id)
+      : lines.findIndex((l) => l.id === selectedLine?.id);
+
+    if (lineIdx !== -1) {
+      lines.splice(lineIdx, 1);
+      setLines(lines);
+    }
+
+    closeContextMenu();
+  }
+
   function handleContextMenu(e: KonvaMouseEvent) {
     e.evt.preventDefault(); // Prevents the browser's default context menu from appearing
     e.evt.stopPropagation();
@@ -378,6 +396,7 @@ function useEventListeners() {
     rotateLineVertical,
     rotateLineHorizontal,
     closeContextMenu,
+    deleteLine,
   };
 }
 

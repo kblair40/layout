@@ -17,6 +17,7 @@ import { Portal, Html } from "react-konva-utils";
 
 import { Button } from "../ui/button";
 import useEventListeners from "@/hooks/useEventListeners";
+import { cn } from "@/lib/utils";
 
 const DEFAULT_LINE: Partial<LineConfig> = {
   strokeWidth: 3,
@@ -72,6 +73,7 @@ const Stage = () => {
     rotateLineVertical,
     rotateLineHorizontal,
     closeContextMenu,
+    deleteLine,
   } = useEventListeners();
 
   function handleClickRotate(dir: "horizontal" | "vertical") {
@@ -81,6 +83,10 @@ const Stage = () => {
 
     closeContextMenu();
   }
+
+  const ctxMenuButtonClasses = cn(
+    "h-6 w-full flex justify-center items-center py-1 text-xs"
+  );
 
   return (
     <div>
@@ -152,27 +158,29 @@ const Stage = () => {
             {selectedLine && menuPosition && (
               <Html>
                 <div
-                  style={{
-                    top: menuPosition.y,
-                    left: menuPosition.x,
-                    // top: selectedLine.y - 80,
-                    // left: selectedLine.x - 80,
-                  }}
+                  style={{ top: menuPosition.y, left: menuPosition.x }}
                   className="absolute w-40 h-20 border px-1 flex flex-col justify-evenly"
                 >
                   <Button
                     size="sm"
-                    className="w-full"
+                    className={ctxMenuButtonClasses}
                     onClick={() => handleClickRotate("vertical")}
                   >
                     Rotate Vertical
                   </Button>
                   <Button
                     size="sm"
-                    className="w-full"
+                    className={ctxMenuButtonClasses}
                     onClick={() => handleClickRotate("horizontal")}
                   >
                     Rotate Horizontal
+                  </Button>
+                  <Button
+                    size="sm"
+                    className={ctxMenuButtonClasses}
+                    onClick={() => deleteLine()}
+                  >
+                    Delete Line
                   </Button>
                 </div>
               </Html>
