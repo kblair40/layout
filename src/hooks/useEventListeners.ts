@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Konva from "konva";
 import type { LineConfig as KonvaLineConfig } from "konva/lib/shapes/Line";
 import type { Vector2d } from "konva/lib/types";
@@ -22,10 +22,35 @@ function useEventListeners() {
   }>();
   const [menuPosition, setMenuPosition] = useState<Coordinate>();
   const [isDrawing, setIsDrawing] = useState(false);
+  const [shiftKeyPressed, setShiftKeyPressed] = useState(false);
 
   const stage = useRef<Konva.Stage>(null);
   // const isDrawing = useRef(false);
   const mouseStart = useRef<Vector2d>(null);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      console.log("KEYDOWN:", e.key);
+      if (e.key === "Shift") {
+        setShiftKeyPressed(true);
+      }
+    }
+
+    function handleKeyUp(e: KeyboardEvent) {
+      console.log("KEY:", e.key);
+      if (shiftKeyPressed) {
+        setShiftKeyPressed(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
 
   function setStage(_stage: Konva.Stage) {
     stage.current = _stage;
@@ -56,6 +81,11 @@ function useEventListeners() {
     // button === 0 === left click.  button === 2 === right click
     if (!stageListenersActive || e.evt.button === 2) return;
     console.log("MOUSE DOWN", { evt: e.evt.button, dd: e.target.dragDistance });
+
+    if (!e.evt.shiftKey) {
+      console.log("Drawing requires shift key");
+      return;
+    }
 
     if (!isDrawing) {
       console.log("");
@@ -99,7 +129,7 @@ function useEventListeners() {
   };
 
   const handleMouseUp = (e: KonvaMouseEvent) => {
-    if (!stageListenersActive) return;
+    if (!stageListenersActive || !isDrawing) return;
     setIsDrawing(false);
     console.log("Mouse Up On:", e.target.getType());
     // if (e.target.getType() !== "Stage") {
