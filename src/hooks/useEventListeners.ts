@@ -30,12 +30,12 @@ function useEventListeners() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      // console.log("KEYDOWN:", e.key);
+      console.log("KEYDOWN:", e.key);
       if (e.key === "Shift") setShiftKeyPressed(true);
     }
 
     function handleKeyUp(e: KeyboardEvent) {
-      // console.log("KEYUP:", e.key);
+      console.log("KEYUP:", e.key);
       if (e.key === "Shift") setShiftKeyPressed(false);
     }
 
@@ -277,6 +277,7 @@ function useEventListeners() {
       console.log("Validation failed");
       return;
     }
+    
     console.group("Rotate Vertical");
     console.log("Points before:", [...points]);
     const lengthBefore = getLineLength([...points]);
@@ -364,6 +365,8 @@ function useEventListeners() {
 
   const actionState = {
     isDragging: dragging,
+    shiftKeyPressed,
+    isDrawing,
   };
 
   const listeners = {
@@ -383,8 +386,6 @@ function useEventListeners() {
     actionState,
     selectedLine,
     menuPosition,
-    isDrawing,
-    shiftKeyPressed,
     setStageListenersActive,
     setStage,
     rotateLineVertical,

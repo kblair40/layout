@@ -67,8 +67,6 @@ const Stage = () => {
     stageListenersActive,
     selectedLine,
     menuPosition,
-    isDrawing,
-    shiftKeyPressed,
     setStageListenersActive,
     setStage,
     rotateLineVertical,
@@ -118,7 +116,7 @@ const Stage = () => {
                   listeners.handleContextMenu(e);
                 }}
                 stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
-                draggable={!shiftKeyPressed}
+                draggable={!actionState.shiftKeyPressed}
               />
             );
           })}
@@ -193,9 +191,9 @@ const Stage = () => {
             {stageListenersActive ? "disable" : "enable"} stage listeners
           </button>
           <div className="text-sm leading-tight font-medium">
-            <p>Drawing: {String(isDrawing)}</p>
+            <p>Drawing: {String(actionState.isDrawing)}</p>
             <p>Dragging: {String(actionState.isDragging)}</p>
-            <p>shiftKeyPressed: {String(shiftKeyPressed)}</p>
+            <p>shiftKeyPressed: {String(actionState.shiftKeyPressed)}</p>
           </div>
         </div>
 
