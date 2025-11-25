@@ -80,7 +80,11 @@ const Stage = () => {
     deleteLine,
   } = useEventListeners();
 
-  const { setStage: setSnapStage } = useObjectSnap(lines);
+  const {
+    setStage: setSnapStage,
+    handleDragMove,
+    handleDragEnd,
+  } = useObjectSnap(lines);
 
   function handleClickRotate(dir: "horizontal" | "vertical") {
     console.log("Rotate", dir);
@@ -105,7 +109,11 @@ const Stage = () => {
         width={window?.innerWidth || 0}
         height={window?.innerHeight - 100 || 0}
       >
-        <Layer ref={layer}>
+        <Layer
+          ref={layer}
+          onDragMove={handleDragMove}
+          onDragEnd={handleDragEnd}
+        >
           {lines.map((line, i) => {
             return (
               <Line
@@ -129,6 +137,7 @@ const Stage = () => {
                 }}
                 stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
                 draggable={!actionState.shiftKeyPressed}
+                name="wall"
               />
             );
           })}
