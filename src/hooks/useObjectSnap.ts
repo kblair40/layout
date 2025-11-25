@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useCallback } from "react";
 import Konva from "konva";
 import type { Node, NodeConfig } from "konva/lib/Node";
 
@@ -7,7 +7,31 @@ import type { KonvaMouseEvent } from "@/lib/event-listener-utils";
 
 const GUIDELINE_OFFSET = 5;
 
-function useObjectSnap(lines: LineConfig[]) {
+type Snap = "start" | "center" | "end";
+interface SnappingEdges {
+  vertical: Array<{
+    guide: number;
+    offset: number;
+    snap: Snap;
+  }>;
+  horizontal: Array<{
+    guide: number;
+    offset: number;
+    snap: Snap;
+  }>;
+}
+
+interface Guide {
+  lineGuide: number;
+  diff: number;
+  snap?: string;
+  offset: number;
+  orientation?: "V" | "H";
+}
+
+function useObjectSnap() {
+  const [guides, setGuides] = useState<Guide[]>();
+
   const layer = useRef<Konva.Layer>(null);
 
   const setLayer = (_layer: Konva.Layer) => {
@@ -15,10 +39,10 @@ function useObjectSnap(lines: LineConfig[]) {
   };
 
   // were can we snap our objects?
-  function getLineGuideStops(skipShape?: Node<NodeConfig>) {
-    // const stage = getStage();
-    const stage = layer.current?.getStage();
+  function getLineGuideStops(skipShape: Konva.Shape) {
+    const stage = skipShape.getStage();
     if (!stage) return;
+
     const [w, h] = [stage.width(), stage.height()];
     // we can snap to stage borders and the center of the stage
     const vertical: (number | number[])[] = [0, w / 2, w];
@@ -41,133 +65,123 @@ function useObjectSnap(lines: LineConfig[]) {
     };
   }
 
-  interface SnappingEdge {
-    guide: number;
-    offset: number;
-    snap: string;
-  }
-
   // what points of the object will trigger to snapping?
   // it can be just center of the object
   // but we will enable all edges and center
-  function getObjectSnappingEdges(node: Node<NodeConfig>): {
-    vertical: SnappingEdge[];
-    horizontal: SnappingEdge[];
-  } {
-    const box = node.getClientRect();
-    const absPos = node.absolutePosition();
+  // function getObjectSnappingEdges(node: Node<NodeConfig>): SnappingEdges {
+  const getObjectSnappingEdges = useCallback(
+    (node: Konva.Shape): SnappingEdges => {
+      const box = node.getClientRect();
+      const absPos = node.absolutePosition();
 
-    return {
-      vertical: [
-        {
-          guide: Math.round(box.x),
-          offset: Math.round(absPos.x - box.x),
-          snap: "start",
-        },
-        {
-          guide: Math.round(box.x + box.width / 2),
-          offset: Math.round(absPos.x - box.x - box.width / 2),
-          snap: "center",
-        },
-        {
-          guide: Math.round(box.x + box.width),
-          offset: Math.round(absPos.x - box.x - box.width),
-          snap: "end",
-        },
-      ],
-      horizontal: [
-        {
-          guide: Math.round(box.y),
-          offset: Math.round(absPos.y - box.y),
-          snap: "start",
-        },
-        {
-          guide: Math.round(box.y + box.height / 2),
-          offset: Math.round(absPos.y - box.y - box.height / 2),
-          snap: "center",
-        },
-        {
-          guide: Math.round(box.y + box.height),
-          offset: Math.round(absPos.y - box.y - box.height),
-          snap: "end",
-        },
-      ],
-    };
-  }
-
-  interface Guide {
-    lineGuide: number;
-    diff: number;
-    snap?: string;
-    offset: number;
-    orientation?: "V" | "H";
-  }
+      return {
+        vertical: [
+          {
+            guide: Math.round(box.x),
+            offset: Math.round(absPos.x - box.x),
+            snap: "start",
+          },
+          {
+            guide: Math.round(box.x + box.width / 2),
+            offset: Math.round(absPos.x - box.x - box.width / 2),
+            snap: "center",
+          },
+          {
+            guide: Math.round(box.x + box.width),
+            offset: Math.round(absPos.x - box.x - box.width),
+            snap: "end",
+          },
+        ],
+        horizontal: [
+          {
+            guide: Math.round(box.y),
+            offset: Math.round(absPos.y - box.y),
+            snap: "start",
+          },
+          {
+            guide: Math.round(box.y + box.height / 2),
+            offset: Math.round(absPos.y - box.y - box.height / 2),
+            snap: "center",
+          },
+          {
+            guide: Math.round(box.y + box.height),
+            offset: Math.round(absPos.y - box.y - box.height),
+            snap: "end",
+          },
+        ],
+      };
+    },
+    []
+  );
 
   // find all snapping possibilities
-  function getGuides(
-    lineGuideStops: { vertical: number[]; horizontal: number[] },
-    itemBounds: { vertical: SnappingEdge[]; horizontal: SnappingEdge[] }
-  ) {
-    const resultV: Guide[] = [];
-    const resultH: Guide[] = [];
+  const getGuides = useCallback(
+    (
+      lineGuideStops: { vertical: number[]; horizontal: number[] },
+      itemBounds: SnappingEdges
+    ) => {
+      const resultV: Guide[] = [];
+      const resultH: Guide[] = [];
 
-    lineGuideStops.vertical.forEach((lineGuide) => {
-      itemBounds.vertical.forEach((itemBound) => {
-        var diff = Math.abs(lineGuide - itemBound.guide);
-        // if the distance between guild line and object snap point is close we can consider this for snapping
-        if (diff < GUIDELINE_OFFSET) {
-          resultV.push({
-            lineGuide: lineGuide,
-            diff: diff,
-            snap: itemBound.snap,
-            offset: itemBound.offset,
-          });
-        }
+      lineGuideStops.vertical.forEach((lineGuide) => {
+        itemBounds.vertical.forEach((itemBound) => {
+          const diff = Math.abs(lineGuide - itemBound.guide);
+          // if the distance between guild line and object snap point is close we can consider this for snapping
+          if (diff < GUIDELINE_OFFSET) {
+            resultV.push({
+              lineGuide: lineGuide,
+              diff: diff,
+              snap: itemBound.snap,
+              offset: itemBound.offset,
+            });
+          }
+        });
       });
-    });
 
-    lineGuideStops.horizontal.forEach((lineGuide) => {
-      itemBounds.horizontal.forEach((itemBound) => {
-        var diff = Math.abs(lineGuide - itemBound.guide);
-        if (diff < GUIDELINE_OFFSET) {
-          resultH.push({
-            lineGuide: lineGuide,
-            diff: diff,
-            snap: itemBound.snap,
-            offset: itemBound.offset,
-          });
-        }
+      lineGuideStops.horizontal.forEach((lineGuide) => {
+        itemBounds.horizontal.forEach((itemBound) => {
+          const diff = Math.abs(lineGuide - itemBound.guide);
+          if (diff < GUIDELINE_OFFSET) {
+            resultH.push({
+              lineGuide: lineGuide,
+              diff: diff,
+              snap: itemBound.snap,
+              offset: itemBound.offset,
+            });
+          }
+        });
       });
-    });
 
-    var guides = [];
+      const guides = [];
 
-    // find closest snap
-    var minV = resultV.sort((a, b) => a.diff - b.diff)[0];
-    var minH = resultH.sort((a, b) => a.diff - b.diff)[0];
-    if (minV) {
-      guides.push({
-        lineGuide: minV.lineGuide,
-        offset: minV.offset,
-        orientation: "V",
-        snap: minV.snap,
-      });
-    }
-    if (minH) {
-      guides.push({
-        lineGuide: minH.lineGuide,
-        offset: minH.offset,
-        orientation: "H",
-        snap: minH.snap,
-      });
-    }
-    return guides;
-  }
+      // find closest snap
+      const minV = resultV.sort((a, b) => a.diff - b.diff)[0];
+      const minH = resultH.sort((a, b) => a.diff - b.diff)[0];
+      if (minV) {
+        guides.push({
+          lineGuide: minV.lineGuide,
+          offset: minV.offset,
+          orientation: "V",
+          snap: minV.snap,
+        });
+      }
+      if (minH) {
+        guides.push({
+          lineGuide: minH.lineGuide,
+          offset: minH.offset,
+          orientation: "H",
+          snap: minH.snap,
+        });
+      }
+      return guides;
+    },
+    []
+  );
 
-  function drawGuides(guides: Guide[]) {
+  const drawGuides = useCallback((guides: Guide[]) => {
     guides.forEach((lg) => {
       if (lg.orientation === "H") {
-        var line = new Konva.Line({
+        const line = new Konva.Line({
           points: [-6000, 0, 6000, 0],
           stroke: "rgb(0, 161, 255)",
           strokeWidth: 1,
@@ -182,7 +196,7 @@ function useObjectSnap(lines: LineConfig[]) {
           y: lg.lineGuide,
         });
       } else if (lg.orientation === "V") {
-        var line = new Konva.Line({
+        const line = new Konva.Line({
           points: [0, -6000, 0, 6000],
           stroke: "rgb(0, 161, 255)",
           strokeWidth: 1,
@@ -198,60 +212,102 @@ function useObjectSnap(lines: LineConfig[]) {
         });
       }
     });
-  }
+  }, []);
 
-  function handleDragMove(e: KonvaMouseEvent) {
-    console.log("LAYER DRAG MOVE");
-    if (!layer.current) return;
-    layer.current.find("guide-line").forEach((l) => l.destroy());
+  const handleDragMove = useCallback(
+    (e: KonvaMouseEvent) => {
+      console.log("LAYER DRAG MOVE");
 
-    // find possible snapping lines
-    const lineGuideStops = getLineGuideStops(e.target);
-    // find snapping points of current object
-    const itemBounds = getObjectSnappingEdges(e.target);
+      const layer = e.target.getLayer()!;
 
-    if (!lineGuideStops) {
-      return;
-    }
+      // clear all previous lines on the screen
+      (layer.find(".guid-line") as Konva.Shape[]).forEach((l: Konva.Shape) =>
+        l.destroy()
+      );
 
-    // now find where can we snap current object
-    const guides = getGuides(lineGuideStops, itemBounds);
+      // find possible snapping lines
+      const lineGuideStops = getLineGuideStops(e.target as Konva.Shape);
+      // find snapping points of current object
+      const itemBounds = getObjectSnappingEdges(e.target as Konva.Shape);
 
-    // do nothing of no snapping
-    if (!guides.length) {
-      return;
-    }
-
-    drawGuides(guides as Guide[]);
-
-    const absPos = e.target.absolutePosition();
-
-    guides.forEach((lg) => {
-      switch (lg.orientation) {
-        case "V": {
-          absPos.x = lg.lineGuide + lg.offset;
-          break;
-        }
-        case "H": {
-          absPos.y = lg.lineGuide + lg.offset;
-          break;
-        }
+      if (!lineGuideStops) {
+        return;
       }
-    });
 
-    e.target.absolutePosition(absPos);
-  }
+      // now find where can we snap current object
+      const guides = getGuides(lineGuideStops, itemBounds);
+
+      // do nothing of no snapping
+      if (!guides.length) {
+        return;
+      }
+
+      drawGuides(guides as Guide[]);
+      // setGuides(guides as Guide[]);
+
+      const absPos = e.target.absolutePosition();
+
+      guides.forEach((lg) => {
+        switch (lg.snap) {
+          case "start": {
+            switch (lg.orientation) {
+              case "V": {
+                absPos.x = lg.lineGuide + lg.offset;
+                break;
+              }
+              case "H": {
+                absPos.y = lg.lineGuide + lg.offset;
+                break;
+              }
+            }
+            break;
+          }
+          case "center": {
+            switch (lg.orientation) {
+              case "V": {
+                absPos.x = lg.lineGuide + lg.offset;
+                break;
+              }
+              case "H": {
+                absPos.y = lg.lineGuide + lg.offset;
+                break;
+              }
+            }
+            break;
+          }
+          case "end": {
+            switch (lg.orientation) {
+              case "V": {
+                absPos.x = lg.lineGuide + lg.offset;
+                break;
+              }
+              case "H": {
+                absPos.y = lg.lineGuide + lg.offset;
+                break;
+              }
+            }
+            break;
+          }
+        }
+      });
+
+      e.target.absolutePosition(absPos);
+    },
+    [drawGuides, getGuides, getObjectSnappingEdges]
+  );
 
   function handleDragEnd() {
     console.log("LAYER DRAG END");
     // clear all previous lines on the screen
-    layer.current?.find(".guide-line").forEach((l) => l.destroy());
+    // layer.current?.find(".guide-line").forEach((l) => l.destroy());
+    setGuides(undefined);
   }
 
   return {
     setLayer,
     handleDragMove,
     handleDragEnd,
+    guides,
   };
 }
 

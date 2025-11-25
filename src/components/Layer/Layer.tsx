@@ -27,13 +27,13 @@ interface Props extends React.PropsWithChildren {
 const Layer = ({ children }: Props) => {
   const layer = useRef<Konva.Layer>(null);
 
-  const { lines } = useEventListeners();
+//   const { lines } = useEventListeners();
   const {
     // setStage: setSnapStage,
     setLayer,
     handleDragMove,
     handleDragEnd,
-  } = useObjectSnap(lines);
+  } = useObjectSnap();
 
   useEffect(() => {
     if (layer.current) setLayer(layer.current);
