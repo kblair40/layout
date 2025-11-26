@@ -37,8 +37,7 @@ function useObjectSnap() {
   const layerRef = useRef<Konva.Layer>(null);
   const stageRef = useRef<Konva.Stage>(null);
 
-  const setLayer = (layer: Konva.Layer, stage: Konva.Stage) => {
-    // _setLayer(layer)
+  const setLayerAndStage = (layer: Konva.Layer, stage: Konva.Stage) => {
     layerRef.current = layer;
     stageRef.current = stage;
 
@@ -54,9 +53,6 @@ function useObjectSnap() {
       return;
     }
 
-    // setStage(stage);
-    // setLayer(layer);
-
     for (let i = 0; i < 5; i++) {
       const rect = new Konva.Rect({
         x: Math.random() * stage.width(),
@@ -64,7 +60,6 @@ function useObjectSnap() {
         width: 50 + Math.random() * 50,
         height: 50 + Math.random() * 50,
         fill: Konva.Util.getRandomColor(),
-        // rotation: Math.random() * 360,
         draggable: true,
         name: "object",
       });
@@ -412,7 +407,7 @@ function useObjectSnap() {
   }
 
   return {
-    setLayer,
+    setLayerAndStage,
     handleDragMove,
     handleDragEnd,
     guides,

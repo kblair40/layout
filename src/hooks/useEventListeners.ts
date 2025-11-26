@@ -25,7 +25,8 @@ function useEventListeners() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [shiftKeyPressed, setShiftKeyPressed] = useState(false);
 
-  const stage = useRef<Konva.Stage>(null);
+  const stageRef = useRef<Konva.Stage>(null);
+  const layerRef = useRef<Konva.Layer>(null);
   const mouseStart = useRef<Vector2d>(null);
 
   useEffect(() => {
@@ -49,9 +50,15 @@ function useEventListeners() {
     };
   }, []);
 
-  function setStage(_stage: Konva.Stage) {
-    stage.current = _stage;
-  }
+  // function setStage(_stage: Konva.Stage) {
+  //   stageRef.current = _stage;
+  // }
+  const setLayerAndStage = (layer: Konva.Layer, stage: Konva.Stage) => {
+    layerRef.current = layer;
+    stageRef.current = stage;
+
+    // init();
+  };
 
   function getLinesClone(): LineConfig[] {
     return JSON.parse(JSON.stringify(lines));
@@ -218,14 +225,14 @@ function useEventListeners() {
   };
 
   function logStage(e?: KonvaMouseEvent) {
-    if (stage.current) {
+    if (stageRef.current) {
       console.log("Stage:", {
-        children: stage.current.getChildren(),
-        getClientRect: stage.current.getClientRect(),
+        children: stageRef.current.getChildren(),
+        getClientRect: stageRef.current.getClientRect(),
         getAbsolutePosition:
-          e?.target.getAbsolutePosition(stage.current) || undefined,
+          e?.target.getAbsolutePosition(stageRef.current) || undefined,
         getAbsoluteTransform:
-          e?.target.getAbsoluteTransform(stage.current) || undefined,
+          e?.target.getAbsoluteTransform(stageRef.current) || undefined,
       });
     }
   }
@@ -393,7 +400,8 @@ function useEventListeners() {
     selectedLine,
     menuPosition,
     setStageListenersActive,
-    setStage,
+    // setStage,
+    setLayerAndStage,
     rotateLineVertical,
     rotateLineHorizontal,
     closeContextMenu,

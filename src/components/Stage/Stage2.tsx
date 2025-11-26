@@ -357,33 +357,34 @@ const Stage = () => {
     if (didDraw.current) return;
     didDraw.current = true;
 
-    setLayer(layerRef.current!, stageRef.current!);
+    setLayerAndStage(layerRef.current!, stageRef.current!);
+    setEvtListenersLayerAndStage(layerRef.current!, stageRef.current!);
   }, []);
 
-  //   const {
-  //     listeners,
-  //     lines,
-  //     actionState,
-  //     stageListenersActive,
-  //     selectedLine,
-  //     menuPosition,
-  //     setStageListenersActive,
-  //     setStage,
-  //     rotateLineVertical,
-  //     rotateLineHorizontal,
-  //     closeContextMenu,
-  //     deleteLine,
-  //   } = useEventListeners();
+  const {
+    listeners,
+    lines,
+    actionState,
+    stageListenersActive,
+    selectedLine,
+    menuPosition,
+    setStageListenersActive,
+    rotateLineVertical,
+    rotateLineHorizontal,
+    closeContextMenu,
+    deleteLine,
+    setLayerAndStage: setEvtListenersLayerAndStage,
+  } = useEventListeners();
 
-  const { handleDragMove, handleDragEnd, setLayer } = useObjectSnap();
+  const { handleDragMove, handleDragEnd, setLayerAndStage } = useObjectSnap();
 
-  //   function handleClickRotate(dir: "horizontal" | "vertical") {
-  //     console.log("Rotate", dir);
-  //     if (dir === "horizontal") rotateLineHorizontal();
-  //     else rotateLineVertical();
+  function handleClickRotate(dir: "horizontal" | "vertical") {
+    console.log("Rotate", dir);
+    if (dir === "horizontal") rotateLineHorizontal();
+    else rotateLineVertical();
 
-  //     closeContextMenu();
-  //   }
+    closeContextMenu();
+  }
 
   const ctxMenuButtonClasses = cn(
     "h-6 w-full flex justify-center items-center py-1 text-xs"
@@ -394,14 +395,14 @@ const Stage = () => {
       <Canvas
         ref={stageRef}
         // className="border"
-        // onMouseDown={listeners.handleMouseDownOnStage}
-        // onMouseMove={listeners.handleMouseMoveOnStage}
-        // onMouseup={listeners.handleMouseUpOnStage}
+        onMouseDown={listeners.handleMouseDownOnStage}
+        onMouseMove={listeners.handleMouseMoveOnStage}
+        onMouseup={listeners.handleMouseUpOnStage}
         width={window.innerWidth || 0}
         height={window.innerHeight - 100 || 0}
       >
         <Layer ref={layerRef}>
-          {/* {lines.map((line, i) => {
+          {lines.map((line, i) => {
             return (
               <Line
                 key={i}
@@ -427,13 +428,14 @@ const Stage = () => {
                 }}
                 stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
                 draggable={!actionState.shiftKeyPressed}
-                name="wall"
+                // name="wall"
+                name="object"
                 onDragMove={handleDragMove}
               />
             );
-          })} */}
+          })}
 
-          {/* <Portal selector=".top">
+          <Portal selector=".top">
             {selectedLine && menuPosition && (
               <Html>
                 <div
@@ -465,7 +467,7 @@ const Stage = () => {
               </Html>
             )}
           </Portal>
-          <Group name="top" /> */}
+          <Group name="top" />
         </Layer>
       </Canvas>
 
