@@ -40,106 +40,28 @@ function useObjectSnap() {
   const setLayerAndStage = (layer: Konva.Layer, stage: Konva.Stage) => {
     layerRef.current = layer;
     stageRef.current = stage;
-
-    init();
   };
-
-  function init() {
-    const stage = stageRef.current;
-    const layer = layerRef.current;
-
-    if (!stage || !layer) {
-      console.log("Stage and/or layerRef refs not set:", { stage, layer });
-      return;
-    }
-
-    for (let i = 0; i < 5; i++) {
-      const rect = new Konva.Rect({
-        x: Math.random() * stage.width(),
-        y: Math.random() * stage.height(),
-        width: 50 + Math.random() * 50,
-        height: 50 + Math.random() * 50,
-        fill: Konva.Util.getRandomColor(),
-        draggable: true,
-        name: "object",
-      });
-
-      rect.on("dragmove", (e: Konva.KonvaEventObject<DragEvent>) =>
-        // onDragMove(e)
-        handleDragMove(e)
-      );
-      rect.on("dragend", (e: Konva.KonvaEventObject<DragEvent>) =>
-        handleDragEnd(e)
-      );
-
-      layer.add(rect);
-    }
-
-    layer.draw();
-  }
-
-  // const didDraw = useRef(false);
-  // useEffect(() => {
-  //   if (didDraw.current) return;
-  //   didDraw.current = true;
-
-  //   const stage = stageRef.current;
-  //   const layer = layerRef.current;
-
-  //   if (!stage || !layer) {
-  //     console.log("Stage and/or layerRef refs not set:", { stage, layer });
-  //     return;
-  //   }
-
-  //   // setStage(stage);
-  //   // setLayer(layer);
-
-  //   for (let i = 0; i < 5; i++) {
-  //     const rect = new Konva.Rect({
-  //       x: Math.random() * stage.width(),
-  //       y: Math.random() * stage.height(),
-  //       width: 50 + Math.random() * 50,
-  //       height: 50 + Math.random() * 50,
-  //       fill: Konva.Util.getRandomColor(),
-  //       // rotation: Math.random() * 360,
-  //       draggable: true,
-  //       name: "object",
-  //     });
-
-  //     rect.on("dragmove", (e: Konva.KonvaEventObject<DragEvent>) =>
-  //       // onDragMove(e)
-  //       handleDragMove(e)
-  //     );
-  //     rect.on("dragend", (e: Konva.KonvaEventObject<DragEvent>) =>
-  //       handleDragEnd(e)
-  //     );
-
-  //     layer.add(rect);
-  //   }
-
-  //   layer.draw();
-  // }, []);
 
   // were can we snap our objects?
   function getLineGuideStops(skipShape: Konva.Shape) {
     const stage = skipShape.getStage();
     if (!stage) return { vertical: [], horizontal: [] };
 
-    // const [w, h] = [stage.width(), stage.height()];
+    const [w, h] = [stage.width(), stage.height()];
     // we can snap to stage borders and the center of the stage
-    // const vertical: (number | number[])[] = [0, w / 2, w];
-    // const horizontal: (number | number[])[] = [0, h / 2, h];
+    const vertical: (number | number[])[] = [0, w / 2, w];
+    const horizontal: (number | number[])[] = [0, h / 2, h];
 
-    const vertical: (number | number[])[] = [
-      0,
-      stage.width() / 2,
-      stage.width(),
-    ];
-    const horizontal: (number | number[])[] = [
-      0,
-      stage.height() / 2,
-      stage.height(),
-    ];
+    // const vertical: (number | number[])[] = [
+    //   0,
+    //   stage.width() / 2,
+    //   stage.width(),
+    // ];
+    // const horizontal: (number | number[])[] = [
+    //   0,
+    //   stage.height() / 2,
+    //   stage.height(),
+    // ];
 
     // and we snap over edges and center of each object on the canvas
     // stage.find(".wall").forEach((guideItem) => {

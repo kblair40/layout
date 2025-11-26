@@ -14,10 +14,11 @@ import { cn } from "@/lib/utils";
 import type { KonvaMouseEvent } from "@/lib/event-listener-utils";
 
 const DEFAULT_LINE: Partial<LineConfig> = {
-  strokeWidth: 3,
+  strokeWidth: 4,
   stroke: "black",
 };
 const GUIDELINE_OFFSET = 5;
+// const GUIDELINE_OFFSET = 1;
 
 type Snap = "start" | "center" | "end";
 interface SnappingEdges {
