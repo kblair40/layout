@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import Konva from "konva";
 import type { Node, NodeConfig } from "konva/lib/Node";
 
@@ -178,57 +178,64 @@ function useObjectSnap() {
     []
   );
 
-  const drawGuides = useCallback((guides: Guide[]) => {
-    guides.forEach((lg) => {
-      if (lg.orientation === "H") {
-        const line = new Konva.Line({
-          points: [-6000, 0, 6000, 0],
-          stroke: "rgb(0, 161, 255)",
-          strokeWidth: 1,
-          name: "guide-line",
-          dash: [4, 6],
-        });
+  const drawGuides = useCallback(
+    (guides: ReturnType<typeof getGuides>, layer: Konva.Layer) => {
+      guides.forEach((lg) => {
+        if (lg.orientation === "H") {
+          const line = new Konva.Line({
+            points: [-6000, 0, 6000, 0],
+            stroke: "rgb(0, 161, 255)",
+            strokeWidth: 1,
+            name: "guide-line",
+            dash: [4, 6],
+          });
 
-        layer.current?.add(line);
+          layer.add(line);
 
-        line.absolutePosition({
-          x: 0,
-          y: lg.lineGuide,
-        });
-      } else if (lg.orientation === "V") {
-        const line = new Konva.Line({
-          points: [0, -6000, 0, 6000],
-          stroke: "rgb(0, 161, 255)",
-          strokeWidth: 1,
-          name: "guide-line",
-          dash: [4, 6],
-        });
+          line.absolutePosition({
+            x: 0,
+            y: lg.lineGuide,
+          });
+        } else if (lg.orientation === "V") {
+          const line = new Konva.Line({
+            points: [0, -6000, 0, 6000],
+            stroke: "rgb(0, 161, 255)",
+            strokeWidth: 1,
+            name: "guide-line",
+            dash: [4, 6],
+          });
 
-        layer.current?.add(line);
+          layer.add(line);
 
-        line.absolutePosition({
-          x: lg.lineGuide,
-          y: 0,
-        });
-      }
-    });
-  }, []);
+          line.absolutePosition({
+            x: lg.lineGuide,
+            y: 0,
+          });
+        }
+      });
+    },
+    []
+  );
 
   const handleDragMove = useCallback(
     (e: KonvaMouseEvent) => {
       console.log("LAYER DRAG MOVE");
 
       const layer = e.target.getLayer()!;
+      console.log("LAYER:", layer);
+
+      const lines = layer.find(".guide-line") as Konva.Shape[];
+      console.log("LINES:", lines);
 
       // clear all previous lines on the screen
-      (layer.find(".guid-line") as Konva.Shape[]).forEach((l: Konva.Shape) =>
-        l.destroy()
-      );
+      lines.forEach((l: Konva.Shape) => l.destroy());
 
       // find possible snapping lines
       const lineGuideStops = getLineGuideStops(e.target as Konva.Shape);
       // find snapping points of current object
       const itemBounds = getObjectSnappingEdges(e.target as Konva.Shape);
+
+      console.log("lineGuideStops:", lineGuideStops);
 
       if (!lineGuideStops) {
         return;
@@ -242,7 +249,7 @@ function useObjectSnap() {
         return;
       }
 
-      drawGuides(guides as Guide[]);
+      drawGuides(guides, layer);
       // setGuides(guides as Guide[]);
 
       const absPos = e.target.absolutePosition();
@@ -296,11 +303,12 @@ function useObjectSnap() {
     [drawGuides, getGuides, getObjectSnappingEdges]
   );
 
-  function handleDragEnd() {
+  function handleDragEnd(e: KonvaMouseEvent) {
+    const layer = e.target.getLayer();
     console.log("LAYER DRAG END");
     // clear all previous lines on the screen
-    // layer.current?.find(".guide-line").forEach((l) => l.destroy());
-    setGuides(undefined);
+    layer?.find(".guide-line").forEach((l) => l.destroy());
+    // setGuides(undefined);
   }
 
   return {
