@@ -5,7 +5,10 @@ import type { Node, NodeConfig } from "konva/lib/Node";
 import type { LineConfig } from "./useEventListeners";
 import type { KonvaMouseEvent } from "@/lib/event-listener-utils";
 
-const GUIDELINE_OFFSET = 5;
+const GUIDELINE_OFFSET = 12;
+// const GUIDELINE_OFFSET = 5;
+const LINE_WIDTH = 4;
+const HALF_LINE_WIDTH = LINE_WIDTH / 2;
 
 type Snap = "start" | "center" | "end";
 interface SnappingEdges {
@@ -59,9 +62,25 @@ function useObjectSnap() {
         return;
       }
       const box = guideItem.getClientRect();
+      // console.log("BOX:", box);
       // and we can snap to all edges of shapes
-      vertical.push([box.x, box.x + box.width, box.x + box.width / 2]);
-      horizontal.push([box.y, box.y + box.height, box.y + box.height / 2]);
+      // // ORIGINAL
+      // vertical.push([box.x, box.x + box.width, box.x + box.width / 2]);
+      // horizontal.push([box.y, box.y + box.height, box.y + box.height / 2]);
+
+      // NEW (tweaking due to use of line instead of rect)
+      vertical.push([
+        box.x,
+        box.x - 2,
+        box.x + box.width,
+        box.x + box.width / 2,
+      ]);
+      horizontal.push([
+        box.y,
+        box.y - 2,
+        box.y + box.height,
+        box.y + box.height / 2,
+      ]);
     });
 
     return {
@@ -78,43 +97,85 @@ function useObjectSnap() {
     (node: Konva.Shape): SnappingEdges => {
       const box = node.getClientRect();
       const absPos = node.absolutePosition();
+      console.log("BOX/absPos:", { box, absPos });
 
-      return {
+      // Original
+      // return {
+      //   vertical: [
+      //     {
+      //       guide: Math.round(box.x),
+      //       offset: Math.round(absPos.x - box.x),
+      //       snap: "start",
+      //     },
+      //     {
+      //       guide: Math.round(box.x + box.width / 2),
+      //       offset: Math.round(absPos.x - box.x - box.width / 2),
+      //       snap: "center",
+      //     },
+      //     {
+      //       guide: Math.round(box.x + box.width),
+      //       offset: Math.round(absPos.x - box.x - box.width),
+      //       snap: "end",
+      //     },
+      //   ],
+      //   horizontal: [
+      //     {
+      //       guide: Math.round(box.y),
+      //       offset: Math.round(absPos.y - box.y),
+      //       snap: "start",
+      //     },
+      //     {
+      //       guide: Math.round(box.y + box.height / 2),
+      //       offset: Math.round(absPos.y - box.y - box.height / 2),
+      //       snap: "center",
+      //     },
+      //     {
+      //       guide: Math.round(box.y + box.height),
+      //       offset: Math.round(absPos.y - box.y - box.height),
+      //       snap: "end",
+      //     },
+      //   ],
+      // };
+
+      // New - updating for line instead of rect
+      const res: SnappingEdges = {
         vertical: [
           {
-            guide: Math.round(box.x),
-            offset: Math.round(absPos.x - box.x),
+            guide: Math.round(box.x) + 2,
+            offset: Math.round(absPos.x - box.x) + 2,
             snap: "start",
           },
           {
-            guide: Math.round(box.x + box.width / 2),
-            offset: Math.round(absPos.x - box.x - box.width / 2),
+            guide: Math.round(box.x + LINE_WIDTH / 2) + 2,
+            offset: Math.round(absPos.x - box.x - LINE_WIDTH / 2) + 2,
             snap: "center",
           },
           {
-            guide: Math.round(box.x + box.width),
-            offset: Math.round(absPos.x - box.x - box.width),
+            guide: Math.round(box.x + HALF_LINE_WIDTH) + 2,
+            offset: Math.round(absPos.x - box.x - HALF_LINE_WIDTH) + 2,
             snap: "end",
           },
         ],
         horizontal: [
           {
-            guide: Math.round(box.y),
-            offset: Math.round(absPos.y - box.y),
+            guide: Math.round(box.y) + 2,
+            offset: Math.round(absPos.y - box.y) + 2,
             snap: "start",
           },
           {
-            guide: Math.round(box.y + box.height / 2),
-            offset: Math.round(absPos.y - box.y - box.height / 2),
+            guide: Math.round(box.y + LINE_WIDTH / 2) + 2,
+            offset: Math.round(absPos.y - box.y - LINE_WIDTH / 2) + 2,
             snap: "center",
           },
           {
-            guide: Math.round(box.y + box.height),
-            offset: Math.round(absPos.y - box.y - box.height),
+            guide: Math.round(box.y + HALF_LINE_WIDTH) + 2,
+            offset: Math.round(absPos.y - box.y - HALF_LINE_WIDTH) + 2,
             snap: "end",
           },
         ],
       };
+      console.log("getObjectSnappingEdges:", res);
+      return res;
     },
     []
   );
@@ -131,6 +192,7 @@ function useObjectSnap() {
       lineGuideStops.vertical.forEach((lineGuide) => {
         itemBounds.vertical.forEach((itemBound) => {
           const diff = Math.abs(lineGuide - itemBound.guide);
+          // console.log("diff:", diff);
           // if the distance between guild line and object snap point is close we can consider this for snapping
           if (diff < GUIDELINE_OFFSET) {
             resultV.push({
@@ -139,6 +201,8 @@ function useObjectSnap() {
               snap: itemBound.snap,
               offset: itemBound.offset,
             });
+          } else {
+            // console.warn("NO GUIDE");
           }
         });
       });
@@ -146,6 +210,7 @@ function useObjectSnap() {
       lineGuideStops.horizontal.forEach((lineGuide) => {
         itemBounds.horizontal.forEach((itemBound) => {
           const diff = Math.abs(lineGuide - itemBound.guide);
+          // console.log("diff:", diff);
           if (diff < GUIDELINE_OFFSET) {
             resultH.push({
               lineGuide: lineGuide,
@@ -153,6 +218,8 @@ function useObjectSnap() {
               snap: itemBound.snap,
               offset: itemBound.offset,
             });
+          } else {
+            // console.warn("NO GUIDE");
           }
         });
       });

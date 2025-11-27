@@ -275,9 +275,11 @@ function useEventListeners() {
 
     console.group("Rotate Vertical");
     console.log("Points before:", [...points]);
-    const lengthBefore = getLineLength([...points]);
+    // const lengthBefore = getLineLength([...points]);
+    const lengthBefore = Math.round(getLineLength([...points]));
     console.log("Length before:", lengthBefore);
-    const half = (points[0] + points[2]) / 2;
+    const half = Math.round((points[0] + points[2]) / 2);
+    // const half = (points[0] + points[2]) / 2;
     points[0] = half;
     points[2] = half;
     console.log("Points after x update:", [...points]);
@@ -309,10 +311,12 @@ function useEventListeners() {
     console.group("Rotate Horizontal");
 
     console.log("Points before:", [...points]);
-    const lengthBefore = getLineLength([...points]);
+    const lengthBefore = Math.round(getLineLength([...points]));
+    // const lengthBefore = getLineLength([...points]);
     console.log("Length before:", lengthBefore);
 
-    const half = (points[1] + points[3]) / 2;
+    // const half = (points[1] + points[3]) / 2;
+    const half = Math.round((points[1] + points[3]) / 2);
     points[1] = half;
     points[3] = half;
     console.log("Points after y update:", [...points]);

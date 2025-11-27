@@ -15,7 +15,7 @@ import type { KonvaMouseEvent } from "@/lib/event-listener-utils";
 
 const DEFAULT_LINE: Partial<LineConfig> = {
   strokeWidth: 4,
-  stroke: "black",
+  // stroke: "black",   
 };
 const GUIDELINE_OFFSET = 5;
 // const GUIDELINE_OFFSET = 1;
@@ -427,7 +427,7 @@ const Stage2 = () => {
                   e.evt.preventDefault();
                   listeners.handleContextMenu(e);
                 }}
-                stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
+                stroke={selectedLine?.id === line.id ? "#19a" : "#00000033"}
                 draggable={!actionState.shiftKeyPressed}
                 name="wall"
                 // name="object"
