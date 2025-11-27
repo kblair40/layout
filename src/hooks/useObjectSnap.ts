@@ -53,8 +53,8 @@ function useObjectSnap() {
     const horizontal: (number | number[])[] = [0, h / 2, h];
 
     // and we snap over edges and center of each object on the canvas
-    // stage.find(".wall").forEach((guideItem) => {
-    stage.find(".object").forEach((guideItem) => {
+    stage.find(".wall").forEach((guideItem) => {
+      // stage.find(".object").forEach((guideItem) => {
       if (guideItem === skipShape) {
         return;
       }

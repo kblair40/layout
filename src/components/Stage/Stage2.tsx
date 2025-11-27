@@ -42,7 +42,7 @@ interface Guide {
   orientation?: "V" | "H";
 }
 
-const Stage = () => {
+const Stage2 = () => {
   const layerRef = useRef<Konva.Layer>(null);
   const stageRef = useRef<Konva.Stage>(null);
 
@@ -429,8 +429,8 @@ const Stage = () => {
                 }}
                 stroke={selectedLine?.id === line.id ? "#19a" : "#000"}
                 draggable={!actionState.shiftKeyPressed}
-                // name="wall"
-                name="object"
+                name="wall"
+                // name="object"
                 onDragMove={handleDragMove}
               />
             );
@@ -512,4 +512,4 @@ const Stage = () => {
   );
 };
 
-export default Stage;
+export default Stage2;
