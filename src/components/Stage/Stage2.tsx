@@ -474,25 +474,25 @@ const Stage = () => {
 
       <div className="h-[100px] flex items-center gap-x-4 px-4 relative">
         <div className="flex flex-col gap-y-1 pl-12">
-          {/* <button
+          <button
             className="border text-sm px-2 py-1 flex justify-center items-center rounded-sm bg-white transition-colors hover:bg-neutral-100 duration-150 cursor-pointer active:bg-neutral-200"
             onClick={() => setStageListenersActive((cur) => !cur)}
           >
             {stageListenersActive ? "disable" : "enable"} stage listeners
-          </button> */}
+          </button>
 
-          {/* <div className="text-sm leading-tight font-medium">
+          <div className="text-sm leading-tight font-medium">
             <p>Drawing: {String(actionState.isDrawing)}</p>
             <p>Dragging: {String(actionState.isDragging)}</p>
             <p>shiftKeyPressed: {String(actionState.shiftKeyPressed)}</p>
-          </div> */}
+          </div>
         </div>
 
-        {/* <div className="flex flex-col gap-y-1">
+        <div className="flex flex-col gap-y-1">
           <div># of Lines = {lines.length}</div>
-        </div> */}
+        </div>
 
-        {/* <div className="absolute -top-60 right-0 bottom-0 w-60 max-h-[340px] border z-50 bg-neutral-50 overflow-y-auto">
+        <div className="absolute -top-60 right-0 bottom-0 w-60 max-h-[340px] border z-50 bg-neutral-50 overflow-y-auto">
           {lines.map((l, i) => {
             return (
               <div key={i}>
@@ -501,12 +501,12 @@ const Stage = () => {
               </div>
             );
           })}
-        </div> */}
+        </div>
 
-        {/* <pre>
+        <pre>
           selectedLine:
           {selectedLine ? JSON.stringify(selectedLine) : null}
-        </pre> */}
+        </pre>
       </div>
     </div>
   );

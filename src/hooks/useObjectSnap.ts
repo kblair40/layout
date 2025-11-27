@@ -52,17 +52,6 @@ function useObjectSnap() {
     const vertical: (number | number[])[] = [0, w / 2, w];
     const horizontal: (number | number[])[] = [0, h / 2, h];
 
-    // const vertical: (number | number[])[] = [
-    //   0,
-    //   stage.width() / 2,
-    //   stage.width(),
-    // ];
-    // const horizontal: (number | number[])[] = [
-    //   0,
-    //   stage.height() / 2,
-    //   stage.height(),
-    // ];
-
     // and we snap over edges and center of each object on the canvas
     // stage.find(".wall").forEach((guideItem) => {
     stage.find(".object").forEach((guideItem) => {
