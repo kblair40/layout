@@ -62,7 +62,7 @@ function useObjectSnap() {
         return;
       }
       const box = guideItem.getClientRect();
-      // console.log("BOX:", box);
+      console.log("BOX:", box);
       // and we can snap to all edges of shapes
       // // ORIGINAL
       // vertical.push([box.x, box.x + box.width, box.x + box.width / 2]);
@@ -71,15 +71,19 @@ function useObjectSnap() {
       // NEW (tweaking due to use of line instead of rect)
       vertical.push([
         box.x,
+        box.x - 1,
+        box.x + 1,
         box.x - 2,
         box.x + box.width,
-        box.x + box.width / 2,
+        // box.x + box.width / 2,
       ]);
       horizontal.push([
         box.y,
+        box.y - 1,
+        box.y + 1,
         box.y - 2,
         box.y + box.height,
-        box.y + box.height / 2,
+        // box.y + box.height / 2,
       ]);
     });
 
