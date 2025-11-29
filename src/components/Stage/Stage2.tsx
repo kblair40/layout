@@ -15,7 +15,7 @@ import type { KonvaMouseEvent } from "@/lib/event-listener-utils";
 
 const DEFAULT_LINE: Partial<LineConfig> = {
   strokeWidth: 4,
-  // stroke: "black",   
+  // stroke: "black",
 };
 const GUIDELINE_OFFSET = 5;
 // const GUIDELINE_OFFSET = 1;
@@ -488,8 +488,13 @@ const Stage2 = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-y-1">
+        <div className="flex flex-col gap-y-1 text-sm">
           <div># of Lines = {lines.length}</div>
+          <div>
+            <Button size="sm" onClick={() => console.clear()}>
+              Clear Console
+            </Button>
+          </div>
         </div>
 
         <div className="absolute -top-60 right-0 bottom-0 w-60 max-h-[340px] border z-50 bg-neutral-50 overflow-y-auto">

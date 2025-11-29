@@ -71,16 +71,16 @@ function useObjectSnap() {
       // NEW (tweaking due to use of line instead of rect)
       vertical.push([
         box.x,
-        box.x - 1,
-        box.x + 1,
+        // box.x - 1,
+        // box.x + 1,
         box.x - 2,
         box.x + box.width,
         // box.x + box.width / 2,
       ]);
       horizontal.push([
         box.y,
-        box.y - 1,
-        box.y + 1,
+        // box.y - 1,
+        // box.y + 1,
         box.y - 2,
         box.y + box.height,
         // box.y + box.height / 2,
@@ -145,18 +145,18 @@ function useObjectSnap() {
       const res: SnappingEdges = {
         vertical: [
           {
-            guide: Math.round(box.x) + 2,
-            offset: Math.round(absPos.x - box.x) + 2,
+            guide: Math.round(box.x) - 2,
+            offset: Math.round(absPos.x - box.x) - 2,
             snap: "start",
           },
           {
-            guide: Math.round(box.x + LINE_WIDTH / 2) + 2,
-            offset: Math.round(absPos.x - box.x - LINE_WIDTH / 2) + 2,
+            guide: Math.round(box.x + LINE_WIDTH / 2) - 2,
+            offset: Math.round(absPos.x - box.x - LINE_WIDTH / 2) - 2,
             snap: "center",
           },
           {
-            guide: Math.round(box.x + HALF_LINE_WIDTH) + 2,
-            offset: Math.round(absPos.x - box.x - HALF_LINE_WIDTH) + 2,
+            guide: Math.round(box.x + HALF_LINE_WIDTH) - 2,
+            offset: Math.round(absPos.x - box.x - HALF_LINE_WIDTH) - 2,
             snap: "end",
           },
         ],
@@ -178,7 +178,7 @@ function useObjectSnap() {
           },
         ],
       };
-      console.log("getObjectSnappingEdges:", res);
+      // console.log("getObjectSnappingEdges:", res);
       return res;
     },
     []
@@ -206,7 +206,10 @@ function useObjectSnap() {
               offset: itemBound.offset,
             });
           } else {
-            // console.warn("NO GUIDE");
+            console.warn("Vertical skipping", {
+              lineGuide,
+              snappingEdge: itemBound,
+            });
           }
         });
       });
@@ -223,7 +226,11 @@ function useObjectSnap() {
               offset: itemBound.offset,
             });
           } else {
-            // console.warn("NO GUIDE");
+            console.warn("NO GUIDE");
+            console.warn("Horizontal skipping", {
+              lineGuide,
+              snappingEdge: itemBound,
+            });
           }
         });
       });
