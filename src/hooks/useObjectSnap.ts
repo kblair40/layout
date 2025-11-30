@@ -5,7 +5,7 @@ import type { Node, NodeConfig } from "konva/lib/Node";
 import type { LineConfig } from "./useEventListeners";
 import type { KonvaMouseEvent } from "@/lib/event-listener-utils";
 
-const GUIDELINE_OFFSET = 12;
+const GUIDELINE_OFFSET = 5;
 // const GUIDELINE_OFFSET = 5;
 const LINE_WIDTH = 4;
 const HALF_LINE_WIDTH = LINE_WIDTH / 2;
@@ -59,30 +59,42 @@ function useObjectSnap() {
     stage.find(".wall").forEach((guideItem) => {
       // stage.find(".object").forEach((guideItem) => {
       if (guideItem === skipShape) {
+        console.log("Skipping", skipShape);
         return;
       }
       const box = guideItem.getClientRect();
       console.log("BOX:", box);
+      const points = guideItem.attrs.points;
+      console.log("POINTS:", points);
       // and we can snap to all edges of shapes
       // // ORIGINAL
       // vertical.push([box.x, box.x + box.width, box.x + box.width / 2]);
       // horizontal.push([box.y, box.y + box.height, box.y + box.height / 2]);
 
+      const maxDist = Math.max(box.height, box.width);
+      const isWider = box.width > box.height;
       // NEW (tweaking due to use of line instead of rect)
       vertical.push([
-        box.x,
+        // box.x,
+        // box.x + maxDist + 4,
+        points[0],
+        points[2],
         // box.x - 1,
         // box.x + 1,
-        box.x - 2,
-        box.x + box.width,
+        // box.x - 2,
+        // box.x + box.width + 2,
         // box.x + box.width / 2,
       ]);
       horizontal.push([
-        box.y,
+        // box.y,
+        // box.y + maxDist + 2,
+        points[1] - 6,
+        points[1],
+        points[3],
         // box.y - 1,
         // box.y + 1,
-        box.y - 2,
-        box.y + box.height,
+        // box.y - 2,
+        // box.y + box.height,
         // box.y + box.height / 2,
       ]);
     });
@@ -101,7 +113,7 @@ function useObjectSnap() {
     (node: Konva.Shape): SnappingEdges => {
       const box = node.getClientRect();
       const absPos = node.absolutePosition();
-      console.log("BOX/absPos:", { box, absPos });
+      // console.log("BOX/absPos:", { box, absPos });
 
       // Original
       // return {
@@ -198,19 +210,19 @@ function useObjectSnap() {
           const diff = Math.abs(lineGuide - itemBound.guide);
           // console.log("diff:", diff);
           // if the distance between guild line and object snap point is close we can consider this for snapping
-          if (diff < GUIDELINE_OFFSET) {
-            resultV.push({
-              lineGuide: lineGuide,
-              diff: diff,
-              snap: itemBound.snap,
-              offset: itemBound.offset,
-            });
-          } else {
-            console.warn("Vertical skipping", {
-              lineGuide,
-              snappingEdge: itemBound,
-            });
-          }
+          // if (diff < GUIDELINE_OFFSET) {
+          resultV.push({
+            lineGuide: lineGuide,
+            diff: diff,
+            snap: itemBound.snap,
+            offset: itemBound.offset,
+          });
+          // } else {
+          //   console.warn("Vertical skipping", {
+          //     lineGuide,
+          //     snappingEdge: itemBound,
+          //   });
+          // }
         });
       });
 
@@ -218,20 +230,20 @@ function useObjectSnap() {
         itemBounds.horizontal.forEach((itemBound) => {
           const diff = Math.abs(lineGuide - itemBound.guide);
           // console.log("diff:", diff);
-          if (diff < GUIDELINE_OFFSET) {
-            resultH.push({
-              lineGuide: lineGuide,
-              diff: diff,
-              snap: itemBound.snap,
-              offset: itemBound.offset,
-            });
-          } else {
-            console.warn("NO GUIDE");
-            console.warn("Horizontal skipping", {
-              lineGuide,
-              snappingEdge: itemBound,
-            });
-          }
+          // if (diff < GUIDELINE_OFFSET) {
+          resultH.push({
+            lineGuide: lineGuide,
+            diff: diff,
+            snap: itemBound.snap,
+            offset: itemBound.offset,
+          });
+          // } else {
+          //   console.warn("NO GUIDE");
+          //   console.warn("Horizontal skipping", {
+          //     lineGuide,
+          //     snappingEdge: itemBound,
+          //   });
+          // }
         });
       });
 
