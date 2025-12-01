@@ -21,10 +21,10 @@ import useObjectSnap from "@/hooks/useObjectSnap";
 import { cn } from "@/lib/utils";
 import type { KonvaMouseEvent } from "@/lib/event-listener-utils";
 
-const DEFAULT_LINE: Partial<LineConfig> = {
-  strokeWidth: 4,
-  // stroke: "black",
-};
+// const DEFAULT_LINE: Partial<LineConfig> = {
+//   strokeWidth: 4,
+//   // stroke: "black",
+// };
 const GUIDELINE_OFFSET = 5;
 // const GUIDELINE_OFFSET = 1;
 
@@ -328,6 +328,14 @@ const Stage3 = () => {
 
     // setLayerAndStage(layerRef.current!, stageRef.current!);
     setEvtListenersLayerAndStage(layerRef.current!, stageRef.current!);
+
+    function handleKeyPress(e: KeyboardEvent) {
+      if (e.key === "s" && transformerRef.current) {
+        const tr = transformerRef.current;
+        tr.nodes();
+      }
+    }
+    window.addEventListener("keypress", handleKeyPress);
   }, []);
 
   const { handleDragging, handleDragEnd, handleResizing, handleResizeEnd } =
@@ -393,12 +401,13 @@ const Stage3 = () => {
             return (
               <Line
                 key={i}
-                {...DEFAULT_LINE}
+                // {...DEFAULT_LINE}
                 x={0}
                 y={0}
                 id={line.id}
                 points={line.points}
                 onDragStart={listeners.handleDragStartLine}
+                strokeWidth={2}
                 // onDragEnd={(e) => {
                 //   listeners.handleDragEndLine(e);
                 //   //   handleDragEnd(e);
