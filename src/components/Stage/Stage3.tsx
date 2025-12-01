@@ -50,9 +50,10 @@ interface Guide {
   orientation?: "V" | "H";
 }
 
-const Stage2 = () => {
+const Stage3 = () => {
   const layerRef = useRef<Konva.Layer>(null);
   const stageRef = useRef<Konva.Stage>(null);
+  const transformerRef = useRef<Konva.Transformer>(null);
 
   const getLineGuideStops = (skipShape: Konva.Shape) => {
     const stage = skipShape.getStage();
@@ -320,47 +321,6 @@ const Stage2 = () => {
     );
   };
 
-  //   const didDraw = useRef(false);
-  //   useEffect(() => {
-  //     if (didDraw.current) return;
-  //     didDraw.current = true;
-
-  //     const stage = stageRef.current;
-  //     const layer = layerRef.current;
-  //     if (!stage || !layer) {
-  //       console.log("Stage and/or layerRef refs not set:", { stage, layer });
-  //       return;
-  //     }
-
-  //     // setStage(stage);
-  //     setLayer(layer);
-
-  //     for (let i = 0; i < 5; i++) {
-  //       const rect = new Konva.Rect({
-  //         x: Math.random() * stage.width(),
-  //         y: Math.random() * stage.height(),
-  //         width: 50 + Math.random() * 50,
-  //         height: 50 + Math.random() * 50,
-  //         fill: Konva.Util.getRandomColor(),
-  //         // rotation: Math.random() * 360,
-  //         draggable: true,
-  //         name: "object",
-  //       });
-
-  //       rect.on("dragmove", (e: Konva.KonvaEventObject<DragEvent>) =>
-  //         // onDragMove(e)
-  //         handleDragMove(e)
-  //       );
-  //       rect.on("dragend", (e: Konva.KonvaEventObject<DragEvent>) =>
-  //         onDragEnd(e)
-  //       );
-
-  //       layer.add(rect);
-  //     }
-
-  //     layer.draw();
-  //   }, []);
-
   const didDraw = useRef(false);
   useEffect(() => {
     if (didDraw.current) return;
@@ -369,6 +329,24 @@ const Stage2 = () => {
     // setLayerAndStage(layerRef.current!, stageRef.current!);
     setEvtListenersLayerAndStage(layerRef.current!, stageRef.current!);
   }, []);
+
+  const { handleDragging, handleDragEnd, handleResizing, handleResizeEnd } =
+    useKonvaSnapping({
+      guidelineColor: "blue",
+      guidelineDash: true,
+      snapToStageCenter: true,
+      snapRange: 5,
+      guidelineThickness: 1,
+      showGuidelines: true,
+      snapToShapes: true,
+      snapToStageBorders: true,
+    });
+
+  const handleSelect = (e: KonvaMouseEvent) => {
+    e.evt.stopPropagation();
+    e.evt.preventDefault();
+    transformerRef.current?.nodes([e.target]);
+  };
 
   const {
     listeners,
@@ -421,10 +399,10 @@ const Stage2 = () => {
                 id={line.id}
                 points={line.points}
                 onDragStart={listeners.handleDragStartLine}
-                onDragEnd={(e) => {
-                  listeners.handleDragEndLine(e);
-                  //   handleDragEnd(e);
-                }}
+                // onDragEnd={(e) => {
+                //   listeners.handleDragEndLine(e);
+                //   //   handleDragEnd(e);
+                // }}
                 onMouseEnter={(e) => {
                   document.body.style.cursor = "pointer";
                 }}
@@ -440,6 +418,9 @@ const Stage2 = () => {
                 name="wall"
                 // name="object"
                 // onDragMove={handleDragMove}
+                onClick={handleSelect}
+                onDragMove={handleDragging}
+                onDragEnd={handleDragEnd}
               />
             );
           })}
@@ -477,6 +458,13 @@ const Stage2 = () => {
             )}
           </Portal>
           <Group name="top" />
+
+          <Transformer
+            ref={transformerRef}
+            onTransform={handleResizing}
+            onTransformEnd={handleResizeEnd}
+            keepRatio={false}
+          />
         </Layer>
       </Canvas>
 
@@ -525,4 +513,4 @@ const Stage2 = () => {
   );
 };
 
-export default Stage2;
+export default Stage3;
